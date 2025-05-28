@@ -1,6 +1,12 @@
 # PickPark Proof of Concept Mobile Application
 ## Project: PickPark
-**Platform:** React Native with Expo **Timeline:** 6 Weeks **Team Members:** > List team roles/names
+- **Platform:** React Native with Expo
+- **Timeline:** 6 Weeks
+- **Team Members:**
+    - **Dylan Verallo:** Backend and QA
+    - **Nicholas Schwamborn:** Frontend and UI/UX
+    - **Jesse Wattenhofer:** Project Manager, Frontend, UI/UX
+    - **James Abuan:** TBD
 
 ## Project Overview
 This project aims to develop a proof-of-concept mobile application using React Native and Expo to demonstrate key functionality, technical feasibility, and user experience for a targeted use case.
@@ -130,33 +136,33 @@ _Ownership for each criterion will be assigned among team members based on their
 ## Team Roles
 - **Project Manager:** Oversees timeline and deliverables
 
-  - [Primary Student's name]
+  - Jesse Wattenhofer
 
   - [Secondary Student's name]
 
 - **Frontend Developers:** UI implementation and styling
 
-  - [Primary Student's name]
+  - Nicholas Schwamborn
 
-  - [Secondary Student's name]
+  - Jesse Wattenhofer
 
 - **Backend Integrator:** API and state management
 
-  - [Primary Student's name]
+  - Dylan Verallo
 
   - [Secondary Student's name]
 
 - **QA/Tester:** Testing, bug tracking, and Continuous Integration (CI)
 
-  - [Primary Student's name]
+  - Dylan Verallo
 
   - [Secondary Student's name]
 
 - **UI/UX Designers:** Wireframes, prototypes, and polish
 
-  - Jesse Wattenhofer
-
   - Nicholas Schwamborn
+
+  - Jesse Wattenhofer
 
 ## Version Control Workflow
 - **Main Branch:** Stable releases

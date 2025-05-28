@@ -171,7 +171,7 @@ _Ownership for each criterion will be assigned among team members based on their
 
 - **Dev Branch:** Ongoing development
 
-  - [Dev Branch Repository](https://github.com/Kurenai-Misuzu/PickPark)
+  - [Dev Branch Repository](https://github.com/Kurenai-Misuzu/PickPark/tree/development)
 
 - **Feature Branches:** Dedicated branches per task/feature.
 

@@ -3,7 +3,7 @@
 - **Platform:** React Native with Expo
 - **Timeline:** 6 Weeks
 - **Team Members:**
-    - **Dylan Verallo:** Backend and QA
+    - **Dylan Verallo:** Backend and DevOps
     - **Nicholas Schwamborn:** Frontend and UI/UX
     - **Jesse Wattenhofer:** Project Manager, Frontend, UI/UX
     - **James Abuan:** QA and Backend
@@ -52,6 +52,11 @@ This project aims to develop a proof-of-concept mobile application using React N
 - Initial GitHub repository with project structure.
 
 ## Week 2: Authentication & Basic UI Foundation
+
+- Figure out foundational design for app.
+
+- Create basic screen navigation.
+
 - **Deliverable 1:** Set up the React Native project with a consistent project structure and initial navigation framework.
 
 - **Deliverable 2:** Develop and design the login and registration screens with input validation and error handling.
@@ -59,6 +64,11 @@ This project aims to develop a proof-of-concept mobile application using React N
 - **Deliverable 3:** Establish a basic user management system (using dummy data or a simple API) and create the initial profile placeholder.
 
 ## Week 3: Map Integration & Parking Listings
+
+- Basic functionality with map API.
+
+- Backend with Supabase.
+
 - **Deliverable 1:** Integrate a map API (e.g., Google Maps) to display a basic map view within the app.
 
 - **Deliverable 2:** Implement a search bar that allows users to filter and search for parking locations on the map.
@@ -66,6 +76,11 @@ This project aims to develop a proof-of-concept mobile application using React N
 - **Deliverable 3:** Develop map markers for parking spots and correlate them with a dynamic list view showcasing available parking details.
 
 ## Week 4: Parking Details & User Interaction Features
+
+- Fetch data for details on parking spots such as price.
+
+- Set up backend and frontend for recently viewed.
+
 - **Deliverable 1:** Enrich parking markers and list items with detailed information (price, location, additional parking info).
 
 - **Deliverable 2:** Implement favoriting functionality, enabling users to bookmark preferred parking spots.
@@ -73,6 +88,13 @@ This project aims to develop a proof-of-concept mobile application using React N
 - **Deliverable 3:** Add a "recently viewed" feature to track parking spots that users have interacted with.
 
 ## Week 5: Reviews, Theming, & Profile Enhancements
+
+- Reviewes functionality.
+
+- Polishing up design.
+
+- Allowing profile interaction.
+
 - **Deliverable 1:** Allow users to submit and read reviews for parking spots, establishing an in-app review system.
 
 - **Deliverable 2:** Develop a theme toggle (light/dark mode) and refine overall UI/UX consistency across screens.
@@ -138,8 +160,6 @@ _Ownership for each criterion will be assigned among team members based on their
 
   - Jesse Wattenhofer
 
-  - [Secondary Student's name]
-
 - **Frontend Developers:** UI implementation and styling
 
   - Nicholas Schwamborn
@@ -154,8 +174,6 @@ _Ownership for each criterion will be assigned among team members based on their
 
 - **QA/Tester:** Testing, bug tracking, and Continuous Integration (CI)
 
-  - Dylan Verallo
-
   - James Abuan
 
 - **UI/UX Designers:** Wireframes, prototypes, and polish
@@ -163,6 +181,10 @@ _Ownership for each criterion will be assigned among team members based on their
   - Nicholas Schwamborn
 
   - Jesse Wattenhofer
+ 
+- **DevOps:** DevOps
+
+  - Dylan Verallo
 
 ## Version Control Workflow
 - **Main Branch:** Stable releases

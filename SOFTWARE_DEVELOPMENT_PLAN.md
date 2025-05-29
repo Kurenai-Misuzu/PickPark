@@ -6,7 +6,7 @@
     - **Dylan Verallo:** Backend and QA
     - **Nicholas Schwamborn:** Frontend and UI/UX
     - **Jesse Wattenhofer:** Project Manager, Frontend, UI/UX
-    - **James Abuan:** TBD
+    - **James Abuan:** QA and Backend
 
 ## Project Overview
 This project aims to develop a proof-of-concept mobile application using React Native and Expo to demonstrate key functionality, technical feasibility, and user experience for a targeted use case.
@@ -150,13 +150,13 @@ _Ownership for each criterion will be assigned among team members based on their
 
   - Dylan Verallo
 
-  - [Secondary Student's name]
+  - James Abuan
 
 - **QA/Tester:** Testing, bug tracking, and Continuous Integration (CI)
 
   - Dylan Verallo
 
-  - [Secondary Student's name]
+  - James Abuan
 
 - **UI/UX Designers:** Wireframes, prototypes, and polish
 

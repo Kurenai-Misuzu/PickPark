@@ -51,29 +51,35 @@ This project aims to develop a proof-of-concept mobile application using React N
 
 - Initial GitHub repository with project structure.
 
-## Week 2: Authentication & Basic UI Foundation
-
-- Figure out foundational design for app.
-
-- Create basic screen navigation.
-
-- **Deliverable 1:** Set up the React Native project with a consistent project structure and initial navigation framework.
-
-- **Deliverable 2:** Develop and design the login and registration screens with input validation and error handling.
-
-- **Deliverable 3:** Establish a basic user management system (using dummy data or a simple API) and create the initial profile placeholder.
-
-## Week 3: Map Integration & Parking Listings
+## Week 2: Map Integration & Parking Listings
 
 - Basic functionality with map API.
 
 - Backend with Supabase.
 
+- Foundation app design.
+
+- Basic screen navigation.
+
 - **Deliverable 1:** Integrate a map API (e.g., Google Maps) to display a basic map view within the app.
 
 - **Deliverable 2:** Implement a search bar that allows users to filter and search for parking locations on the map.
 
-- **Deliverable 3:** Develop map markers for parking spots and correlate them with a dynamic list view showcasing available parking details.
+- **Deliverable 3:** Screen navigation on bottom bar.
+
+## Week 3: Authentication & Basic UI Foundation
+
+- Flesh out map functionality.
+
+- Favoriting functionality.
+
+- Database functionality.
+
+- **Deliverable 1:** Develop map markers for parking spots and correlate them with a dynamic list view showcasing available parking details.
+
+- **Deliverable 2:** Allow users to submit and read reviews for parking spots, establishing an in-app review system.
+
+- **Deliverable 3:** Create database functionality for backend.
 
 ## Week 4: Parking Details & User Interaction Features
 
@@ -83,23 +89,23 @@ This project aims to develop a proof-of-concept mobile application using React N
 
 - **Deliverable 1:** Enrich parking markers and list items with detailed information (price, location, additional parking info).
 
-- **Deliverable 2:** Implement favoriting functionality, enabling users to bookmark preferred parking spots.
+- **Deliverable 2:** Develop a theme toggle (light/dark mode) and refine overall UI/UX consistency across screens.
 
 - **Deliverable 3:** Add a "recently viewed" feature to track parking spots that users have interacted with.
 
 ## Week 5: Reviews, Theming, & Profile Enhancements
 
-- Reviewes functionality.
+- Reviews functionality.
 
 - Polishing up design.
 
 - Allowing profile interaction.
 
-- **Deliverable 1:** Allow users to submit and read reviews for parking spots, establishing an in-app review system.
+- **Deliverable 1:** Develop and design the login and registration screens with input validation and error handling.
 
-- **Deliverable 2:** Develop a theme toggle (light/dark mode) and refine overall UI/UX consistency across screens.
+- **Deliverable 2:** Enhance the profile section to provide full access to account information and settings, followed by thorough testing and debugging ahead of a beta release.
 
-- **Deliverable 3:** Enhance the profile section to provide full access to account information and settings, followed by thorough testing and debugging ahead of a beta release.
+- **Deliverable 3:** Establish a basic user management system (using dummy data or a simple API) and create the initial profile placeholder.
 
 ## Week 6: Polish and Presentation
 - Finalize outstanding bug fixes.

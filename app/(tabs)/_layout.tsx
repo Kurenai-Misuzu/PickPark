@@ -40,6 +40,8 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: "Favorites",
+          headerShown: true,
+          headerTitleAlign: "center",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="favorite.fill" color={color} />
           ),
@@ -49,6 +51,9 @@ export default function TabLayout() {
         name="more"
         options={{
           title: "More",
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerTitle: "PickPark",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="menu.fill" color={color} />
           ),

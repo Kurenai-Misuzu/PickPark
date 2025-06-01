@@ -5,6 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { config } from '@/components/ui/gluestack-ui-provider/config';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

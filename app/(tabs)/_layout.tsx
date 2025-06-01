@@ -32,7 +32,8 @@ export default function TabLayout() {
         options={{
           title: "Search",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="search.fill" color={color} />
+            // <IconSymbol size={28} name="search.fill" color={color} />
+            <IconSymbol size={28} name="magnifyingglass" color={color} />
           ),
         }}
       />
@@ -43,7 +44,8 @@ export default function TabLayout() {
           headerShown: true,
           headerTitleAlign: "center",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="favorite.fill" color={color} />
+            // <IconSymbol size={28} name="favorite.fill" color={color} />
+            <IconSymbol size={28} name="star.fill" color={color} />
           ),
         }}
       />
@@ -55,7 +57,8 @@ export default function TabLayout() {
           headerTitleAlign: "center",
           headerTitle: "PickPark",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="menu.fill" color={color} />
+            // <IconSymbol size={28} name="menu.fill" color={color} />
+            <IconSymbol size={28} name="line.3.horizontal" color={color} />
           ),
         }}
       />

@@ -1,16 +1,17 @@
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import React, { useCallback, useMemo, useRef } from "react";
+import { FlatList, StyleSheet, TextInput, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { StyleSheet, View, FlatList, TextInput } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
-
-import testParkingData from '@/data/testParkingData.json';
-import ParkingCard from '@/components/ParkingCard';
+import ParkingCard from "@/components/ParkingCard";
+import { useParkingData } from "@/contexts/ParkingDataContext";
 
 export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['35%', '60%'], []);
+  const snapPoints = useMemo(() => ["35%", "60%"], []);
+
+  const parkingData = useParkingData();
 
   const initialRegion = {
     latitude: 47.61871908877952,
@@ -20,9 +21,9 @@ export default function HomeScreen() {
   };
 
   const handleSheetChanges = useCallback((index: number) => {
-    console.log('Sheet index', index);
+    console.log("Sheet index", index);
   }, []);
- 
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <MapView
@@ -33,7 +34,7 @@ export default function HomeScreen() {
         showsMyLocationButton
       />
       <View style={styles.searchBar}>
-        <TextInput placeholder='Search'></TextInput>
+        <TextInput placeholder="Search"></TextInput>
       </View>
       <BottomSheet
         ref={bottomSheetRef}
@@ -43,16 +44,14 @@ export default function HomeScreen() {
       >
         <BottomSheetView style={styles.sheetContent}>
           <FlatList
-            data={testParkingData}
+            data={parkingData}
             keyExtractor={(item) => item.name}
-            renderItem={({item}) => (
-              <ParkingCard {...item} />
-            )}
+            renderItem={({ item }) => <ParkingCard {...item} />}
           />
         </BottomSheetView>
       </BottomSheet>
     </GestureHandlerRootView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -66,19 +65,19 @@ const styles = StyleSheet.create({
   sheetContent: {
     flex: 1,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   searchBar: {
-    position: 'absolute',
-    flexDirection: 'row',
+    position: "absolute",
+    flexDirection: "row",
     top: 70,
     left: 40,
-    paddingLeft: '5%',
+    paddingLeft: "5%",
     zIndex: 10,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     width: "80%",
     borderRadius: 15,
-    borderColor: 'maroon',
-    borderWidth: 1
-  }
-})
+    borderColor: "maroon",
+    borderWidth: 1,
+  },
+});

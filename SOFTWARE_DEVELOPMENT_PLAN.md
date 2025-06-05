@@ -1,6 +1,12 @@
 # PickPark Proof of Concept Mobile Application
 ## Project: PickPark
-**Platform:** React Native with Expo **Timeline:** 6 Weeks **Team Members:** > List team roles/names
+- **Platform:** React Native with Expo
+- **Timeline:** 6 Weeks
+- **Team Members:**
+    - **Dylan Verallo:** Backend and DevOps
+    - **Nicholas Schwamborn:** Frontend and UI/UX
+    - **Jesse Wattenhofer:** Project Manager, Frontend, UI/UX
+    - **James Abuan:** QA and Backend
 
 ## Project Overview
 This project aims to develop a proof-of-concept mobile application using React Native and Expo to demonstrate key functionality, technical feasibility, and user experience for a targeted use case.
@@ -45,33 +51,61 @@ This project aims to develop a proof-of-concept mobile application using React N
 
 - Initial GitHub repository with project structure.
 
-## Week 2: Authentication & Basic UI Foundation
-- **Deliverable 1:** Set up the React Native project with a consistent project structure and initial navigation framework.
+## Week 2: Map Integration & Parking Listings
 
-- **Deliverable 2:** Develop and design the login and registration screens with input validation and error handling.
+- Basic functionality with map API.
 
-- **Deliverable 3:** Establish a basic user management system (using dummy data or a simple API) and create the initial profile placeholder.
+- Backend with Supabase.
 
-## Week 3: Map Integration & Parking Listings
+- Foundation app design.
+
+- Basic screen navigation.
+
 - **Deliverable 1:** Integrate a map API (e.g., Google Maps) to display a basic map view within the app.
 
 - **Deliverable 2:** Implement a search bar that allows users to filter and search for parking locations on the map.
 
-- **Deliverable 3:** Develop map markers for parking spots and correlate them with a dynamic list view showcasing available parking details.
+- **Deliverable 3:** Screen navigation on bottom bar.
+
+## Week 3: Authentication & Basic UI Foundation
+
+- Flesh out map functionality.
+
+- Favoriting functionality.
+
+- Database functionality.
+
+- **Deliverable 1:** Develop map markers for parking spots and correlate them with a dynamic list view showcasing available parking details.
+
+- **Deliverable 2:** Allow users to submit and read reviews for parking spots, establishing an in-app review system.
+
+- **Deliverable 3:** Create database functionality for backend.
 
 ## Week 4: Parking Details & User Interaction Features
+
+- Fetch data for details on parking spots such as price.
+
+- Set up backend and frontend for recently viewed.
+
 - **Deliverable 1:** Enrich parking markers and list items with detailed information (price, location, additional parking info).
 
-- **Deliverable 2:** Implement favoriting functionality, enabling users to bookmark preferred parking spots.
+- **Deliverable 2:** Develop a theme toggle (light/dark mode) and refine overall UI/UX consistency across screens.
 
 - **Deliverable 3:** Add a "recently viewed" feature to track parking spots that users have interacted with.
 
 ## Week 5: Reviews, Theming, & Profile Enhancements
-- **Deliverable 1:** Allow users to submit and read reviews for parking spots, establishing an in-app review system.
 
-- **Deliverable 2:** Develop a theme toggle (light/dark mode) and refine overall UI/UX consistency across screens.
+- Reviews functionality.
 
-- **Deliverable 3:** Enhance the profile section to provide full access to account information and settings, followed by thorough testing and debugging ahead of a beta release.
+- Polishing up design.
+
+- Allowing profile interaction.
+
+- **Deliverable 1:** Develop and design the login and registration screens with input validation and error handling.
+
+- **Deliverable 2:** Enhance the profile section to provide full access to account information and settings, followed by thorough testing and debugging ahead of a beta release.
+
+- **Deliverable 3:** Establish a basic user management system (using dummy data or a simple API) and create the initial profile placeholder.
 
 ## Week 6: Polish and Presentation
 - Finalize outstanding bug fixes.
@@ -130,33 +164,33 @@ _Ownership for each criterion will be assigned among team members based on their
 ## Team Roles
 - **Project Manager:** Oversees timeline and deliverables
 
-  - [Primary Student's name]
-
-  - [Secondary Student's name]
+  - Jesse Wattenhofer
 
 - **Frontend Developers:** UI implementation and styling
 
-  - [Primary Student's name]
-
-  - [Secondary Student's name]
-
-- **Backend Integrator:** API and state management
-
-  - [Primary Student's name]
-
-  - [Secondary Student's name]
-
-- **QA/Tester:** Testing, bug tracking, and Continuous Integration (CI)
-
-  - [Primary Student's name]
-
-  - [Secondary Student's name]
-
-- **UI/UX Designers:** Wireframes, prototypes, and polish
+  - Nicholas Schwamborn
 
   - Jesse Wattenhofer
 
+- **Backend Integrator:** API and state management
+
+  - Dylan Verallo
+
+  - James Abuan
+
+- **QA/Tester:** Testing, bug tracking, and Continuous Integration (CI)
+
+  - James Abuan
+
+- **UI/UX Designers:** Wireframes, prototypes, and polish
+
   - Nicholas Schwamborn
+
+  - Jesse Wattenhofer
+ 
+- **DevOps:** DevOps
+
+  - Dylan Verallo
 
 ## Version Control Workflow
 - **Main Branch:** Stable releases
@@ -165,7 +199,7 @@ _Ownership for each criterion will be assigned among team members based on their
 
 - **Dev Branch:** Ongoing development
 
-  - [Dev Branch Repository](https://github.com/Kurenai-Misuzu/PickPark)
+  - [Dev Branch Repository](https://github.com/Kurenai-Misuzu/PickPark/tree/development)
 
 - **Feature Branches:** Dedicated branches per task/feature.
 

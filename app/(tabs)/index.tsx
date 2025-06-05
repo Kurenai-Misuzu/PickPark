@@ -1,75 +1,83 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import React, { useCallback, useMemo, useRef } from "react";
+import { FlatList, StyleSheet, TextInput, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import ParkingCard from "@/components/ParkingCard";
+import { useParkingData } from "@/contexts/ParkingDataContext";
 
 export default function HomeScreen() {
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ["35%", "60%"], []);
+
+  const parkingData = useParkingData();
+
+  const initialRegion = {
+    latitude: 47.61871908877952,
+    longitude: -122.34557096646287,
+    latitudeDelta: 2,
+    longitudeDelta: 2,
+  };
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("Sheet index", index);
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <GestureHandlerRootView style={styles.container}>
+      <MapView
+        style={styles.map}
+        initialRegion={initialRegion}
+        provider={PROVIDER_GOOGLE}
+        showsUserLocation
+        showsMyLocationButton
+      />
+      <View style={styles.searchBar}>
+        <TextInput placeholder="Search"></TextInput>
+      </View>
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        index={0}
+      >
+        <BottomSheetView style={styles.sheetContent}>
+          <FlatList
+            data={parkingData}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => <ParkingCard {...item} />}
+          />
+        </BottomSheetView>
+      </BottomSheet>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  map: {
+    width: "100%",
+    height: "100%",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  sheetContent: {
+    flex: 1,
+    padding: 20,
+    alignItems: "center",
+  },
+  searchBar: {
+    position: "absolute",
+    flexDirection: "row",
+    top: 70,
+    left: 40,
+    paddingLeft: "5%",
+    zIndex: 10,
+    backgroundColor: "white",
+    width: "80%",
+    borderRadius: 15,
+    borderColor: "maroon",
+    borderWidth: 1,
   },
 });

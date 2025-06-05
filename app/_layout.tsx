@@ -27,6 +27,7 @@ export default function RootLayout() {
       <ParkingDataProvider>
         <Stack initialRouteName="(login-regi)/login">
           <Stack.Screen name="(login-regi)/login" options={{ headerShown: false }} />
+          <Stack.Screen name="(login-regi)/register" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>

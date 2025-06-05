@@ -9,6 +9,12 @@ export default function LoginScreen() {
         })
     }
 
+    const toSignUp = () => {
+        router.push({
+            pathname: '/(login-regi)/register'
+        })
+    }
+
     return (
         <View style={styles.container}>
             <Image style={styles.pParkImage} source={require('@/assets/images/ParkingPin.png')} />
@@ -27,6 +33,12 @@ export default function LoginScreen() {
                 color="#800000"
                 />
             </View>
+            <Text style={{marginTop: 30, color: 'maroon'}}>
+                Forgot Password?
+            </Text>
+            <Text style={{marginTop: 20}}>
+                Don't have an account? <Text style={{color: 'maroon'}} onPress={() => {toSignUp()}}>Sign up</Text>
+            </Text>
         </View>
     );
 }
@@ -36,8 +48,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     pParkImage: {
-        marginTop: 60,
-        width: '60%',
+        marginTop: 50,
+        width: '70%',
         height: '50%',
     },
     titleText: {
@@ -58,5 +70,6 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         width: '70%',
         marginBottom: 12,
+        padding: 13,
     }
 })

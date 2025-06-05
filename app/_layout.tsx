@@ -25,7 +25,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <ParkingDataProvider>
-        <Stack>
+        <Stack initialRouteName="(login-regi)/login">
+          <Stack.Screen name="(login-regi)/login" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>

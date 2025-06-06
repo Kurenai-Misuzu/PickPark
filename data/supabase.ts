@@ -10,8 +10,8 @@ if (process.env.EXPO_PUBLIC_SUPABASE_URL) {
 } else {
   throw new Error("No supabase URL");
 }
-if (process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY) {
-  supabaseKEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+if (process.env.EXPO_PUBLIC_SUPABASE_KEY) {
+  supabaseKEY = process.env.EXPO_PUBLIC_SUPABASE_KEY;
 } else {
   throw new Error("No supabase Key");
 }

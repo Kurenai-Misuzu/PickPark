@@ -1,3 +1,5 @@
+import { supabase } from "./supabase";
+
 // check for google api
 let googleAPI: string;
 
@@ -36,7 +38,21 @@ export async function findParkingNearLocation(location: string): Promise<any> {
       );
     }
 
+    // get data from google
     const data = await response.json();
+
+    // THIS IS HOW TO GET THE DATA FROM THE PROMISE OF DATA
+    // add to supabase
+    for (const x in data.places) {
+      const { error } = await supabase.from("Locations").upsert({
+        id: data.places[x].id,
+        formattedAddress: data.places[x].formattedAddress,
+        displayName_text: data.places[x].displayName.text,
+      });
+
+      if (error) throw error;
+    }
+
     return data;
   } catch (error: any) {
     console.error("Error searching places:", error.message);

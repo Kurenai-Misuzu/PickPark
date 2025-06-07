@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { supabase } from "./supabase";
 
 async function supabaseUpdateLocationInfo(
-  locationID: number,
+  locationID: string,
   openTime?: string,
   closingTime?: string,
   paymentType?: string,
@@ -34,7 +34,7 @@ export const useWriteLocationInfo = () => {
       paymentType,
       priceHourly,
     }: {
-      locationID: number;
+      locationID: string;
       openTime?: string;
       closingTime?: string;
       paymentType?: string;

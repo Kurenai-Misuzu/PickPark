@@ -15,7 +15,7 @@ const handleLogin = async (
   {
     setSubmitting,
     setErrors,
-  }: FormikHelpers<{ email: string; password: string }>
+  }: FormikHelpers<{ email: string; password: string }>,
 ) => {
   const { error } = await supabase.auth.signInWithPassword({
     email: values.email,

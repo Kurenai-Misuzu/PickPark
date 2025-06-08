@@ -99,7 +99,17 @@ export default function LoginScreen() {
           </>
         )}
       </Formik>
-      <Text style={{ marginTop: 30, color: "maroon" }}>Forgot Password?</Text>
+      {/* TEMPORARY login button for easy access to app without authentication */}
+      <View style={styles.loginButton}>
+        <Button
+          title="Log In (Logs in without auth)"
+          onPress={() => {
+            loginUser();
+          }}
+          color="#800000"
+        />
+      </View>
+      <Text style={{ marginTop: 20, color: "maroon" }}>Forgot Password?</Text>
       <Text style={{ marginTop: 20 }}>
         Don&apos;t have an account? {/* Don't have an account?{" "} */}
         <Text

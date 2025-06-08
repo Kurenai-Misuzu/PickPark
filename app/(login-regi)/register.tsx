@@ -39,7 +39,7 @@ export default function RegisterScreen() {
       firstName: string;
       lastName: string;
       username: string;
-    }>,
+    }>
   ) => {
     const { data, error } = await supabase.auth.signUp({
       email: values.email,
@@ -161,14 +161,6 @@ export default function RegisterScreen() {
           </>
         )}
       </Formik>
-      {/* <TextInput style={styles.infoBox} placeholder="First Name" />
-      <TextInput style={styles.infoBox} placeholder="Last Name" />
-      <TextInput style={styles.infoBox} placeholder="Email" />
-      <TextInput style={styles.infoBox} placeholder="Password" />
-      <TextInput style={styles.infoBox} placeholder="Confirm Password" /> */}
-      {/* <View style={styles.loginButton}>
-        <Button title="Sign Up" color="maroon" />
-      </View> */}
       <Text style={{ marginTop: 100 }}>
         Already have an account?{" "}
         <Text

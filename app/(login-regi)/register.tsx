@@ -39,7 +39,7 @@ export default function RegisterScreen() {
       firstName: string;
       lastName: string;
       username: string;
-    }>
+    }>,
   ) => {
     const { data, error } = await supabase.auth.signUp({
       email: values.email,

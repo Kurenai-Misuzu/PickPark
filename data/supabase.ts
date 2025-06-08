@@ -16,5 +16,9 @@ if (process.env.EXPO_PUBLIC_SUPABASE_KEY) {
   throw new Error("No supabase Key");
 }
 
+// Debug output
+// console.log("SUPABASE_URL:", supabaseURL);
+// console.log("SUPABASE_KEY (first 10 chars):", supabaseKEY?.substring(0, 10));
+
 // create client
 export const supabase = createClient(supabaseURL, supabaseKEY);

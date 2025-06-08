@@ -36,7 +36,7 @@ export default function LoginScreen() {
       </View>
       <Text style={{ marginTop: 30, color: "maroon" }}>Forgot Password?</Text>
       <Text style={{ marginTop: 20 }}>
-        Don't have an account?{" "}
+        Don&apos;t have an account? {/* Don't have an account?{" "} */}
         <Text
           style={{ color: "maroon" }}
           onPress={() => {

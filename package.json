@@ -49,6 +49,7 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
     "react-native-css-interop": "^0.1.22",
+    "react-native-geocoding": "^0.5.0",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-maps": "1.20.1",
     "react-native-reanimated": "~3.17.4",

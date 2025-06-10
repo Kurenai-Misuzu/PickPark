@@ -11,19 +11,9 @@ async function supabaseLocationsQuery(locationID: number) {
   return data;
 }
 
-export const QueryLocationInfo = (locationID: number) => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["queryLocations"],
+export const useQueryLocationInfo = (locationID: number) => {
+  return useQuery({
+    queryKey: ["queryLocations", locationID],
     queryFn: () => supabaseLocationsQuery(locationID),
   });
-
-  if (isLoading) {
-    return "Loading...";
-  }
-
-  if (data?.length === 0) {
-    return "Location not in database!";
-  }
-
-  return data;
 };

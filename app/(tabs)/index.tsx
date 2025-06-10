@@ -1,14 +1,13 @@
-import BottomSheet, { BottomSheetView, BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import { FlatList, StyleSheet, TextInput, View, Text, Image } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import MapView, { PROVIDER_GOOGLE, Region, Marker } from "react-native-maps";
+import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Geocoder from 'react-native-geocoding';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 
 import ParkingCard from "@/components/ParkingCard";
-import { useParkingData } from "@/contexts/ParkingDataContext";
+import LocationInfoCard from "@/components/LocationInfoCard";
 import { findParkingNearLocation } from "@/data/findParkingNearLocation";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function HomeScreen() {
   if (process.env.EXPO_PUBLIC_GOOGLE_API_KEY) {
@@ -16,7 +15,12 @@ export default function HomeScreen() {
   }
   const bottomSheetRef = useRef<BottomSheet>(null);
   const mapRef = useRef<any>(null);
-  const snapPoints = useMemo(() => ["35%", "60%", "90%"], []);
+  const markerRef = useRef<Record<string, any>>({});
+
+  const snapPoints = useMemo(() => ["35%", "60%", "85%"], []);
+  const [parkingData, setParkingData] = useState<ParkingPlace[]>([])
+  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<ParkingPlace | null>(null);
 
   type ParkingPlace = {
     name: string;
@@ -25,8 +29,8 @@ export default function HomeScreen() {
       longitude: number;
       latitude: number;
     };
+    id: number;
   };
-  const [parkingData, setParkingData] = useState<ParkingPlace[]>([])
 
   const [newRegion, setNewRegion] = useState({
     latitude: 47.61871908877952,
@@ -34,6 +38,10 @@ export default function HomeScreen() {
     latitudeDelta: 1,
     longitudeDelta: 1,
   })
+
+  useEffect(() => {
+    handleRegionChange(newRegion)
+  }, [])
 
   async function getCoordinates(address: string) {
     try {
@@ -64,6 +72,7 @@ export default function HomeScreen() {
             return {
               name: place.displayName?.text ?? "Unknown",
               address: place.formattedAddress ?? "Unknown",
+              id: place.id,
               location: await getCoordinates(place.formattedAddress)
             }
           })
@@ -78,6 +87,21 @@ export default function HomeScreen() {
     })
   }
 
+  const handleLocationClick = (place: ParkingPlace, key: string) => {
+    setSelectedMarker(key);
+    setSelectedLocation(place);
+
+    mapRef.current?.animateToRegion({
+      ...place.location,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+
+    setTimeout(() => {
+      markerRef.current[key]?.showCallout();
+    }, 300);
+  };
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <MapView
@@ -87,14 +111,21 @@ export default function HomeScreen() {
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
         showsUserLocation
+        onPress={() => {setSelectedLocation(null)}}
       >
         {parkingData.map((place, index) =>
           place.location ? (
-            <Marker 
-              key={`${place.name}-${index}`} 
+            <Marker
+              ref={(ref) => {
+                markerRef.current[`${place.name}-${index}`] = ref;
+              }}
+              key={`${place.name}-${index}`}
+              identifier={`${place.name}-${index}`}
               coordinate={place.location} 
               title={place.name}
-              tracksViewChanges={false}
+              anchor={{ x: 0.5, y: 1}}
+              pinColor={selectedMarker === `${place.name}-${index}` ? "blue" : "red"}
+              onPress={() => handleLocationClick(place, `${place.name}-${index}`)}
             />
           ) : null
         )}
@@ -108,15 +139,25 @@ export default function HomeScreen() {
         onChange={handleSheetChanges}
         index={0}
         enableContentPanningGesture={false}
+        enableDynamicSizing={false}
+        topInset={0}
       >
         <BottomSheetView style={styles.sheetContent}>
-          <BottomSheetFlatList
-            data={parkingData}
-            keyExtractor={(item, index) => `${item.name}-${index}`}
-            renderItem={({ item }) => <ParkingCard name={item.name} address={item.address} />}
-            ListEmptyComponent={<Text>No parking found</Text>}
-            contentContainerStyle={{ paddingBottom: 80 }}
-          />
+          {selectedLocation ? (
+            <LocationInfoCard name={selectedLocation.name} address={selectedLocation.address} id={selectedLocation.id} />
+          ) : (
+            <BottomSheetFlatList
+              data={parkingData}
+              keyExtractor={(item, index) => `${item.name}-${index}`}
+              renderItem={({ item, index }) => (
+                <Pressable onPress={() => handleLocationClick(item, `${item.name}-${index}`)}>
+                  <ParkingCard name={item.name} address={item.address} />
+                </Pressable>
+              )}
+              ListEmptyComponent={<Text>No parking found</Text>}
+              contentContainerStyle={{ paddingBottom: 80 }}
+            />
+          )}
         </BottomSheetView>
       </BottomSheet>
     </GestureHandlerRootView>

@@ -62,6 +62,6 @@ describe("LoginScreen Supabase Auth", () => {
     await waitFor(() => {
       expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
         email: "test@example.com",
-        password: "password123"
+        password: "password123",
       });
   });

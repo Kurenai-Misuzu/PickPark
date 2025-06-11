@@ -18,16 +18,19 @@ jest.mock("react-native-reanimated", () => {
   Reanimated.withTiming = () => ({});
   Reanimated.withSpring = () => ({});
   Reanimated.useReducedMotion = () => false;
-  Reanimated.default.call = () => {};
   Reanimated.animatedHandleHeight = { get: () => 42 };
 
   return Reanimated;
+});
 
-jest.mock('@gorhom/bottom-sheet', () => {
-  const View = require('react-native').View;
+jest.mock("@gorhom/bottom-sheet", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+
   return {
     __esModule: true,
-    BottomSheetModalProvider: ({ children }: any) => <View>{children}</View>,
+    BottomSheetModalProvider: ({ children }: { children: React.ReactNode }) =>
+      React.createElement(View, null, children),
     BottomSheetView: View,
     BottomSheetModal: View,
     BottomSheetBackdrop: () => null,

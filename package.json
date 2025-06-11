@@ -12,9 +12,6 @@
     "lint": "expo lint",
     "test": "jest"
   },
-  "jest": {
-    "preset": "jest-expo"
-  },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@gluestack-ui/icon": "^0.1.27",

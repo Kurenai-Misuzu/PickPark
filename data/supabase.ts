@@ -10,11 +10,15 @@ if (process.env.EXPO_PUBLIC_SUPABASE_URL) {
 } else {
   throw new Error("No supabase URL");
 }
-if (process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY) {
-  supabaseKEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+if (process.env.EXPO_PUBLIC_SUPABASE_KEY) {
+  supabaseKEY = process.env.EXPO_PUBLIC_SUPABASE_KEY;
 } else {
   throw new Error("No supabase Key");
 }
+
+// Debug output
+// console.log("SUPABASE_URL:", supabaseURL);
+// console.log("SUPABASE_KEY (first 10 chars):", supabaseKEY?.substring(0, 10));
 
 // create client
 export const supabase = createClient(supabaseURL, supabaseKEY);

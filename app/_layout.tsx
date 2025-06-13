@@ -3,6 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -22,23 +23,30 @@ export default function RootLayout() {
     return null;
   }
 
+  const queryClient = new QueryClient();
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <ParkingDataProvider>
-        <Stack initialRouteName="(login-regi)/login">
-          <Stack.Screen
-            name="(login-regi)/login"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="(login-regi)/register"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ParkingDataProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <ParkingDataProvider>
+          <Stack initialRouteName="(login-regi)/login">
+            <Stack.Screen
+              name="(login-regi)/login"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="(login-regi)/register"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(misc)/review"
+              options={{ headerShown: true, title: "Reviews" }}
+            />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ParkingDataProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

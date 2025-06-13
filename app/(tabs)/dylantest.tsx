@@ -14,10 +14,10 @@ export default function DylanTest() {
         title="Write Reviews Test"
         onPress={() =>
           writeReviews.mutate({
-            userID: 5,
+            userID: "5",
             reviewScore: 10,
             reviewText: "This place rocks",
-            locationID: 5,
+            locationID: "5",
           })
         }
       />

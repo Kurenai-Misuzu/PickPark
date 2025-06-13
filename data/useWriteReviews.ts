@@ -2,10 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import { supabase } from "./supabase";
 
 async function supabaseInsertReview(
-  userID: number,
+  userID: string,
   reviewScore: number,
   reviewText: string,
-  locationID: number,
+  locationID: string,
 ) {
   const date = new Date();
 
@@ -34,10 +34,10 @@ export const useWriteReviews = () => {
       reviewText,
       locationID,
     }: {
-      userID: number;
+      userID: string;
       reviewScore: number;
       reviewText: string;
-      locationID: number;
+      locationID: string;
     }) => supabaseInsertReview(userID, reviewScore, reviewText, locationID),
   });
 };

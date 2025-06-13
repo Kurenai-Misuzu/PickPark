@@ -7,11 +7,11 @@ import { Button, StyleSheet, Text, View } from "react-native";
 interface LocationProps {
   name: string;
   address: string;
-  id: string;
+  id: number;
 }
 
 const LocationInfoCard: React.FC<LocationProps> = ({ name, address, id }) => {
-  const { data, isLoading, error } = useQueryLocationInfo(id);
+  const { data, isLoading, error } = useQueryLocationInfo(id.toString());
   if (isLoading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
   if (!data || data.length === 0) return <Text>No data found</Text>;

@@ -1,9 +1,10 @@
 import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View, } from "react-native";
 import Geocoder from 'react-native-geocoding';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
+import { Input, Icon, IconElement, IconProps } from "@ui-kitten/components";
 
 import ParkingCard from "@/components/ParkingCard";
 import LocationInfoCard from "@/components/LocationInfoCard";
@@ -21,6 +22,7 @@ export default function HomeScreen() {
   const [parkingData, setParkingData] = useState<ParkingPlace[]>([])
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<ParkingPlace | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   type ParkingPlace = {
     name: string;
@@ -39,6 +41,13 @@ export default function HomeScreen() {
     longitudeDelta: 1,
   })
 
+  const searchIcon = (props: IconProps): IconElement => (
+    <Pressable onPress={() => {fetchParking(searchQuery)}}>
+      <Icon {...props} name="search" fill="maroon" />
+    </Pressable>
+  );
+
+  // Fetch locations on start up
   useEffect(() => {
     handleRegionChange(newRegion)
   }, [])
@@ -61,10 +70,8 @@ export default function HomeScreen() {
     console.log("Sheet index", index);
   }, []);
 
-  const handleRegionChange = async (region: Region) => {
-    setNewRegion(region);
-
-    findParkingNearLocation("Seattle").then(async (data) => {
+  const fetchParking = async (searchQuery: string) => {
+    findParkingNearLocation(searchQuery).then(async (data) => {
       if (data?.places) {
         const transformed = await Promise.all(
           data.places.map(async (place: any) => {
@@ -85,6 +92,11 @@ export default function HomeScreen() {
         setParkingData([]);
       }
     })
+  }
+
+  const handleRegionChange = async (region: Region) => {
+    setNewRegion(region);
+    fetchParking("Seattle");
   }
 
   const handleLocationClick = (place: ParkingPlace, key: string) => {
@@ -130,9 +142,15 @@ export default function HomeScreen() {
           ) : null
         )}
       </MapView>
-      <View style={styles.searchBar}>
-        <TextInput placeholder="Search"></TextInput>
-      </View>
+        <Input
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          status="danger"
+          placeholder="Search"
+          accessoryLeft={searchIcon}
+          onSubmitEditing={() => {fetchParking(searchQuery)}}
+          style={styles.searchBar}
+        />
       <BottomSheet
         ref={bottomSheetRef}
         snapPoints={snapPoints}
@@ -147,15 +165,15 @@ export default function HomeScreen() {
             <LocationInfoCard name={selectedLocation.name} address={selectedLocation.address} id={selectedLocation.id} />
           ) : (
             <BottomSheetFlatList
-              data={parkingData}
-              keyExtractor={(item, index) => `${item.name}-${index}`}
-              renderItem={({ item, index }) => (
-                <Pressable onPress={() => handleLocationClick(item, `${item.name}-${index}`)}>
-                  <ParkingCard name={item.name} address={item.address} />
-                </Pressable>
-              )}
-              ListEmptyComponent={<Text>No parking found</Text>}
-              contentContainerStyle={{ paddingBottom: 80 }}
+            data={parkingData}
+            keyExtractor={(item, index) => `${item.name}-${index}`}
+            renderItem={({ item, index }) => (
+              <Pressable onPress={() => handleLocationClick(item, `${item.name}-${index}`)}>
+                <ParkingCard name={item.name} address={item.address} />
+              </Pressable>
+            )}
+            ListEmptyComponent={<Text>No parking found</Text>}
+            contentContainerStyle={{ paddingBottom: 80 }}
             />
           )}
         </BottomSheetView>
@@ -185,7 +203,7 @@ const styles = StyleSheet.create({
     paddingLeft: "5%",
     zIndex: 10,
     backgroundColor: "white",
-    width: "80%",
+    width: 300,
     borderRadius: 15,
     borderColor: "maroon",
     borderWidth: 1,

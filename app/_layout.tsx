@@ -8,8 +8,10 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-
 import { ParkingDataProvider } from "@/contexts/ParkingDataContext";
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import * as eva from '@eva-design/eva';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function RootLayout() {
@@ -27,6 +29,8 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <IconRegistry icons={EvaIconsPack} />
+        <ApplicationProvider {...eva} theme={eva.light}>
         <ParkingDataProvider>
           <Stack initialRouteName="(login-regi)/login">
             <Stack.Screen
@@ -46,7 +50,8 @@ export default function RootLayout() {
           </Stack>
           <StatusBar style="auto" />
         </ParkingDataProvider>
-      </ThemeProvider>
+        </ApplicationProvider>
+    </ThemeProvider>
     </QueryClientProvider>
   );
 }

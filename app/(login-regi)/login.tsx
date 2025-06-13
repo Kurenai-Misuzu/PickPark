@@ -15,7 +15,7 @@ const handleLogin = async (
   {
     setSubmitting,
     setErrors,
-  }: FormikHelpers<{ email: string; password: string }>,
+  }: FormikHelpers<{ email: string; password: string }>
 ) => {
   const { error } = await supabase.auth.signInWithPassword({
     email: values.email,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   pParkImage: {
     marginTop: 50,
     width: "70%",
-    height: "50%",
+    height: "40%",
   },
   titleText: {
     fontSize: 35,

@@ -40,7 +40,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
               name="(misc)/review"
-              options={{ headerShown: true, title: "Reviews" }}
+              options={{ headerShown: false, title: "Reviews" }}
             />
             <Stack.Screen name="+not-found" />
           </Stack>

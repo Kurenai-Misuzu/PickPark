@@ -1,5 +1,4 @@
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { supabase } from "@/data/supabase";
 import { useWriteLocationInfo } from "@/data/useWriteLocationInfo";
 import { useWriteReviews } from "@/data/useWriteReviews";
@@ -8,7 +7,13 @@ import { Picker } from "@react-native-picker/picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
-import { Button, Platform, StyleSheet, TextInput } from "react-native";
+import {
+  Button,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+} from "react-native";
 import * as Yup from "yup";
 
 async function getUserId() {
@@ -16,10 +21,11 @@ async function getUserId() {
 
   if (error) {
     console.error(error.message, "Using anon user");
+
     return null;
   }
 
-  return user?.user.id || null;
+  return user?.user.id;
 }
 
 const reviewSchema = Yup.object().shape({
@@ -33,7 +39,7 @@ const reviewSchema = Yup.object().shape({
 export default function ReviewScreen() {
   const [showOpeningTimePicker, setShowOpeningTimePicker] = useState(false);
   const [showClosingTimePicker, setShowClosingTimePicker] = useState(false);
-  const [userID, setUserID] = useState("0");
+
   const writeReviews = useWriteReviews();
   const writeLocationInfo = useWriteLocationInfo();
   const localParams = useLocalSearchParams();
@@ -69,18 +75,25 @@ export default function ReviewScreen() {
           priceHourly: values.PriceHourly,
         });
 
-        getUserId().then((data) =>
-          data === null ? setUserID("0") : setUserID(data),
-        );
-
-        writeReviews.mutate({
-          userID: userID,
-          reviewScore: 5,
-          reviewText: values.ReviewText,
-          locationID: locationID,
+        // this is messy but it works usestate was not working for some reason i think cuz of async api call
+        getUserId().then((data) => {
+          if (data === null) {
+            writeReviews.mutate({
+              userID: "0",
+              reviewScore: 5,
+              reviewText: values.ReviewText,
+              locationID: locationID,
+            });
+          } else {
+            writeReviews.mutate({
+              userID: data,
+              reviewScore: 5,
+              reviewText: values.ReviewText,
+              locationID: locationID,
+            });
+          }
         });
 
-        console.log("yuser id: " + userID);
         resetForm();
         router.back();
       }}
@@ -94,7 +107,7 @@ export default function ReviewScreen() {
         touched,
         setFieldValue,
       }) => (
-        <ThemedView style={styles.test}>
+        <SafeAreaView style={styles.test}>
           {/* // OPENING */}
           <Button
             title="change opening time"
@@ -189,7 +202,7 @@ export default function ReviewScreen() {
           )}
 
           <Button title="submit test" onPress={() => handleSubmit()}></Button>
-        </ThemedView>
+        </SafeAreaView>
       )}
     </Formik>
   );

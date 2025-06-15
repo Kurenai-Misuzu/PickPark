@@ -8,7 +8,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import { ParkingDataProvider } from "@/contexts/ParkingDataContext";
+import { FaveProvider } from "@/contexts/FaveContext";
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
@@ -31,7 +31,7 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <IconRegistry icons={EvaIconsPack} />
         <ApplicationProvider {...eva} theme={eva.light}>
-        <ParkingDataProvider>
+        <FaveProvider>
           <Stack initialRouteName="(login-regi)/login">
             <Stack.Screen
               name="(login-regi)/login"
@@ -49,7 +49,7 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
-        </ParkingDataProvider>
+        </FaveProvider>
         </ApplicationProvider>
     </ThemeProvider>
     </QueryClientProvider>

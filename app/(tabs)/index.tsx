@@ -1,10 +1,11 @@
 import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View, } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import Geocoder from 'react-native-geocoding';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { Input, Icon, IconElement, IconProps } from "@ui-kitten/components";
+import { useLocalSearchParams } from "expo-router";
 
 import ParkingCard from "@/components/ParkingCard";
 import LocationInfoCard from "@/components/LocationInfoCard";
@@ -23,6 +24,12 @@ export default function HomeScreen() {
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<ParkingPlace | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Get faveCard info and set it locally
+  const { lat, lng, key } = useLocalSearchParams();
+  const latitude = lat ? parseFloat(lat as string) : null;
+  const longitude = lat ? parseFloat(lng as string) : null;
+  const locID = key;
 
   type ParkingPlace = {
     name: string;
@@ -51,6 +58,33 @@ export default function HomeScreen() {
   useEffect(() => {
     handleRegionChange(newRegion)
   }, [])
+
+  // Find faveCard location and zoom in
+  useEffect(() => {
+    if (longitude && latitude && locID) {
+      const region = {
+        latitude,
+        longitude, 
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      };
+
+      mapRef.current?.animateToRegion(region);
+
+      const closestMatch = parkingData.find(
+        (p) => Math.abs(p.location.latitude - latitude) < 0.0001 && Math.abs(p.location.longitude - longitude) < 0.0001
+      );
+
+      if (closestMatch) {
+        const key = `${closestMatch.name}-${closestMatch.id}`;
+        setSelectedMarker(key);
+        setSelectedLocation(closestMatch);
+        setTimeout(() => {
+          markerRef.current[key]?.showCallout();
+        }, 300);
+      }
+    }
+  }, [locID])
 
   async function getCoordinates(address: string) {
     try {
@@ -123,21 +157,21 @@ export default function HomeScreen() {
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
         showsUserLocation
-        onPress={() => {setSelectedLocation(null)}}
+        onPress={() => {setSelectedLocation(null), setSelectedMarker(null)}}
       >
         {parkingData.map((place, index) =>
           place.location ? (
             <Marker
               ref={(ref) => {
-                markerRef.current[`${place.name}-${index}`] = ref;
+                markerRef.current[`${place.name}-${place.id}`] = ref;
               }}
-              key={`${place.name}-${index}`}
-              identifier={`${place.name}-${index}`}
+              key={`${place.name}-${place.id}`}
+              identifier={`${place.name}-${place.id}`}
               coordinate={place.location} 
               title={place.name}
               anchor={{ x: 0.5, y: 1}}
-              pinColor={selectedMarker === `${place.name}-${index}` ? "blue" : "red"}
-              onPress={() => handleLocationClick(place, `${place.name}-${index}`)}
+              pinColor={selectedMarker === `${place.name}-${place.id}` ? "blue" : "red"}
+              onPress={() => handleLocationClick(place, `${place.name}-${place.id}`)}
             />
           ) : null
         )}
@@ -166,13 +200,13 @@ export default function HomeScreen() {
           ) : (
             <BottomSheetFlatList
             data={parkingData}
-            keyExtractor={(item, index) => `${item.name}-${index}`}
+            keyExtractor={(item, index) => `${item.name}-${item.id}`}
             renderItem={({ item, index }) => (
-              <Pressable onPress={() => handleLocationClick(item, `${item.name}-${index}`)}>
-                <ParkingCard name={item.name} address={item.address} />
+              <Pressable onPress={() => handleLocationClick(item, `${item.name}-${item.id}`)}>
+                <ParkingCard name={item.name} address={item.address} id={item.id} location={item.location} />
               </Pressable>
             )}
-            ListEmptyComponent={<Text>No parking found</Text>}
+            ListEmptyComponent={<Text>No Parking Found</Text>}
             contentContainerStyle={{ paddingBottom: 80 }}
             />
           )}

@@ -1,6 +1,6 @@
 import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, Keyboard } from "react-native";
 import Geocoder from 'react-native-geocoding';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
@@ -105,6 +105,8 @@ export default function HomeScreen() {
   }, []);
 
   const fetchParking = async (searchQuery: string) => {
+    Keyboard.dismiss();
+
     findParkingNearLocation(searchQuery).then(async (data) => {
       if (data?.places) {
         const transformed = await Promise.all(
@@ -157,7 +159,7 @@ export default function HomeScreen() {
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
         showsUserLocation
-        onPress={() => {setSelectedLocation(null), setSelectedMarker(null)}}
+        onPress={() => {setSelectedLocation(null), setSelectedMarker(null), Keyboard.dismiss()}}
       >
         {parkingData.map((place, index) =>
           place.location ? (

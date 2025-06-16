@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/contexts/AuthContext";
 import { FaveProvider } from "@/contexts/FaveContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Appearance } from "react-native";
 import * as eva from "@eva-design/eva";
 import {
   DarkTheme,
@@ -17,6 +18,8 @@ import "react-native-reanimated";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  // Temporarily make local theme light
+  Appearance.setColorScheme("light");
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });

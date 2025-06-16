@@ -1,4 +1,4 @@
-import { supabase } from "@/data/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import { router } from "expo-router";
 import { Formik, FormikHelpers } from "formik";
 import React from "react";
@@ -10,26 +10,22 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string().required("Required"),
 });
 
-const handleLogin = async (
-  values: { email: string; password: string },
-  {
-    setSubmitting,
-    setErrors,
-  }: FormikHelpers<{ email: string; password: string }>,
-) => {
-  const { error } = await supabase.auth.signInWithPassword({
-    email: values.email,
-    password: values.password,
-  });
-  setSubmitting(false);
-  if (error) {
-    setErrors({ email: error.message });
-    return;
-  }
-  router.push("/(tabs)");
-};
-
 export default function LoginScreen() {
+  const { login, loading, error } = useAuth();
+
+  const handleLogin = async (
+    values: { email: string; password: string },
+    {
+      setSubmitting,
+      setErrors,
+    }: FormikHelpers<{ email: string; password: string }>
+  ) => {
+    await login(values.email, values.password);
+    setSubmitting(false);
+    if (error) setErrors({ email: error });
+    else router.push("/(tabs)");
+  };
+
   const loginUser = () => {
     router.push({
       pathname: "/(tabs)",

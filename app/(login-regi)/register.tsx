@@ -1,4 +1,4 @@
-import { supabase } from "@/data/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import { router } from "expo-router";
 import { Formik, FormikHelpers } from "formik";
 import React from "react";
@@ -16,6 +16,8 @@ const RegisterSchema = Yup.object().shape({
 });
 
 export default function RegisterScreen() {
+  const { register, loading, error } = useAuth();
+
   const toLogin = () => {
     router.push({
       pathname: "/(login-regi)/login",
@@ -41,35 +43,16 @@ export default function RegisterScreen() {
       username: string;
     }>
   ) => {
-    const { data, error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-    });
-    if (error) {
-      setSubmitting(false);
-      setErrors({ email: error.message });
-      return;
-    }
-
-    const user = data.user;
-    if (user) {
-      const { error: profileError } = await supabase.from("User").insert([
-        {
-          user_id: user.id, // Must use same ID as in Authentication Users table
-          username: values.username,
-          first_name: values.firstName,
-          last_name: values.lastName,
-        },
-      ]);
-      if (profileError) {
-        setSubmitting(false);
-        setErrors({ email: profileError.message });
-        return;
-      }
-    }
-
+    await register(
+      values.email,
+      values.password,
+      values.firstName,
+      values.lastName,
+      values.username
+    );
     setSubmitting(false);
-    router.push("/(tabs)");
+    if (error) setErrors({ email: error });
+    else router.push("/(tabs)");
   };
 
   return (

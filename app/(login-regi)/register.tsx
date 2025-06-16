@@ -16,7 +16,7 @@ const RegisterSchema = Yup.object().shape({
 });
 
 export default function RegisterScreen() {
-  const { register, loading, error } = useAuth();
+  const { register } = useAuth();
 
   const toLogin = () => {
     router.push({

@@ -11,7 +11,7 @@ const LoginSchema = Yup.object().shape({
 });
 
 export default function LoginScreen() {
-  const { login, loading, error } = useAuth();
+  const { login } = useAuth();
 
   const handleLogin = async (
     values: { email: string; password: string },

@@ -20,9 +20,9 @@ export default function LoginScreen() {
       setErrors,
     }: FormikHelpers<{ email: string; password: string }>
   ) => {
-    await login(values.email, values.password);
+    const loginError = await login(values.email, values.password);
     setSubmitting(false);
-    if (error) setErrors({ email: error });
+    if (loginError) setErrors({ email: loginError });
     else router.push("/(tabs)");
   };
 

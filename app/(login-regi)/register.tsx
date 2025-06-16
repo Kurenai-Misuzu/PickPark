@@ -43,7 +43,7 @@ export default function RegisterScreen() {
       username: string;
     }>
   ) => {
-    await register(
+    const registerError = await register(
       values.email,
       values.password,
       values.firstName,
@@ -51,7 +51,7 @@ export default function RegisterScreen() {
       values.username
     );
     setSubmitting(false);
-    if (error) setErrors({ email: error });
+    if (registerError) setErrors({ email: registerError });
     else router.push("/(tabs)");
   };
 

@@ -12,14 +12,14 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<string | null>;
   register: (
     email: string,
     password: string,
     firstName: string,
     lastName: string,
     username: string
-  ) => Promise<void>;
+  ) => Promise<string | null>;
   logout: () => Promise<void>;
 }
 
@@ -48,15 +48,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // LOGIN
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<string | null> => {
     setLoading(true);
     setError(null);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) setError(error.message);
     setLoading(false);
+    if (error) {
+      setError(error.message);
+      return error.message;
+    }
+    return null;
   };
 
   // REGISTER
@@ -66,14 +73,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     firstName: string,
     lastName: string,
     username: string
-  ) => {
+  ): Promise<string | null> => {
     setLoading(true);
     setError(null);
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
       setLoading(false);
-      return;
+      return error.message;
     }
     const user = data.user;
     if (user) {
@@ -85,9 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           last_name: lastName,
         },
       ]);
-      if (profileError) setError(profileError.message);
+      setLoading(false);
+      if (profileError) {
+        setError(profileError.message);
+        return profileError.message;
+      }
     }
-    setLoading(false);
+    return null;
   };
 
   // LOGOUT

@@ -2,6 +2,7 @@ import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/botto
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, Keyboard } from "react-native";
 import Geocoder from 'react-native-geocoding';
+import Location from 'expo-location';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { Input, Icon, IconElement, IconProps } from "@ui-kitten/components";
@@ -18,6 +19,7 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<Record<string, any>>({});
+  const userInteracting = useRef(false);
 
   const snapPoints = useMemo(() => ["35%", "60%", "85%"], []);
   const [parkingData, setParkingData] = useState<ParkingPlace[]>([])
@@ -44,8 +46,8 @@ export default function HomeScreen() {
   const [newRegion, setNewRegion] = useState({
     latitude: 47.61871908877952,
     longitude: -122.34557096646287,
-    latitudeDelta: 1,
-    longitudeDelta: 1,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
   })
 
   const searchIcon = (props: IconProps): IconElement => (
@@ -56,6 +58,24 @@ export default function HomeScreen() {
 
   // Fetch locations on start up
   useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.error("Location permissions denied");
+        return;
+      }
+
+      const {
+        coords: { latitude, longitude }
+      } = await Location.getCurrentPositionAsync({});
+
+      setNewRegion({
+        latitude,
+        longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      });
+    });
     handleRegionChange(newRegion)
   }, [])
 
@@ -91,11 +111,25 @@ export default function HomeScreen() {
       const response = await Geocoder.from(address);
       const location = response.results[0].geometry.location;
       if (location) {
-        return { latitude: location.lat, longitude: location.lng}
+        return { latitude: location.lat, longitude: location.lng};
       }
     }
     catch (error) {
-      console.log("Error while geocoding:", error)
+      console.log("Error while geocoding:", error);
+      return null;
+    }
+  }
+
+  async function getAddress(lat: number, lng: number) {
+    try {
+      const response = await Geocoder.from(lat, lng);
+      const address = response.results[0].formatted_address;
+      if (address) {
+        return address;
+      }
+    }
+    catch (error) {
+      console.log("Error while reverse-geocoding:", error);
       return null;
     }
   }
@@ -104,14 +138,13 @@ export default function HomeScreen() {
     console.log("Sheet index", index);
   }, []);
 
-  const fetchParking = async (searchQuery: string) => {
+  const fetchParking = async (query: string) => {
     Keyboard.dismiss();
 
-    findParkingNearLocation(searchQuery).then(async (data) => {
+    findParkingNearLocation(query).then(async (data) => {
       if (data?.places) {
         const transformed = await Promise.all(
           data.places.map(async (place: any) => {
-            const coords = await getCoordinates(place.formattedAddress)
             return {
               name: place.displayName?.text ?? "Unknown",
               address: place.formattedAddress ?? "Unknown",
@@ -132,7 +165,10 @@ export default function HomeScreen() {
 
   const handleRegionChange = async (region: Region) => {
     setNewRegion(region);
-    fetchParking("Seattle");
+    const mapCenterAdd = await getAddress(newRegion.latitude, newRegion.longitude);
+    if (mapCenterAdd) {
+      fetchParking(mapCenterAdd);
+    }
   }
 
   const handleLocationClick = (place: ParkingPlace, key: string) => {
@@ -155,7 +191,13 @@ export default function HomeScreen() {
       <MapView
         style={styles.map}
         initialRegion={newRegion}
-        onRegionChangeComplete={handleRegionChange}
+        onPanDrag={() => {userInteracting.current = true}}
+        onRegionChangeComplete={(region => {
+          if (userInteracting.current) {
+            handleRegionChange(region);
+            userInteracting.current = false;
+          }
+        })}
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
         showsUserLocation
@@ -224,7 +266,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: "100%",
+    height: "75%",
   },
   sheetContent: {
     flex: 1,

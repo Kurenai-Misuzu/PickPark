@@ -97,7 +97,7 @@ export default function LoginScreen() {
       {/* TEMPORARY login button for easy access to app without authentication */}
       <View style={styles.loginButton}>
         <Button
-          title="Log In (Logs in without auth)"
+          title="Log In (as admin)"
           onPress={() => {
             loginAdmin();
           }}

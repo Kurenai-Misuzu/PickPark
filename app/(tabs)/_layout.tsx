@@ -88,15 +88,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="more"
+        name="settings"
         options={{
-          title: "More",
+          title: "Settings",
           tabBarLabel: ({ color }) => (
-            <Text style={{ color: "black", fontSize: 14 }}>More</Text>
+            <Text style={{ color: "black", fontSize: 14 }}>Settings</Text>
           ),
           headerShown: true,
           headerTitleAlign: "center",
-          headerTitle: "PickPark",
+          headerTitle: "Settings",
           tabBarIcon: ({ color, focused }) => (
             // Error in name is fine, due to not assinging all MaterialIcon variables in IconSymbol />
             focused ? (

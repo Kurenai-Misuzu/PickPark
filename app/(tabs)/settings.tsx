@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button, Text, View } from "react-native";
 
-export default function MoreScreen() {
+export default function SettingsScreen() {
   const { logout, loading, user } = useAuth();
   const [profile, setProfile] = useState<{
     username: string;

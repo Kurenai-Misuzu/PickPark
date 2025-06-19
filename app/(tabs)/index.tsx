@@ -1,11 +1,11 @@
 import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, Keyboard } from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, Keyboard, View } from "react-native";
 import Geocoder from 'react-native-geocoding';
 import Location from 'expo-location';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
-import { Input, Icon, IconElement, IconProps } from "@ui-kitten/components";
+import { Input, Icon, IconElement, IconProps, Spinner } from "@ui-kitten/components";
 import { useLocalSearchParams } from "expo-router";
 
 import ParkingCard from "@/components/ParkingCard";
@@ -19,6 +19,7 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<Record<string, any>>({});
+  const markerTapRef = useRef(false);
   const userInteracting = useRef(false);
 
   const snapPoints = useMemo(() => ["35%", "60%", "85%"], []);
@@ -26,6 +27,7 @@ export default function HomeScreen() {
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<ParkingPlace | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [markersLoaded, setMarkersLoaded] = useState(false);
 
   // Get faveCard info and set it locally
   const { lat, lng, key } = useLocalSearchParams();
@@ -106,6 +108,12 @@ export default function HomeScreen() {
     }
   }, [locID])
 
+  useEffect(() => {
+    if (markersLoaded && parkingData.length > 0) {
+      panToRegion(parkingData);
+    }
+  }, [markersLoaded])
+
   async function getCoordinates(address: string) {
     try {
       const response = await Geocoder.from(address);
@@ -134,12 +142,9 @@ export default function HomeScreen() {
     }
   }
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("Sheet index", index);
-  }, []);
-
   const fetchParking = async (query: string) => {
     Keyboard.dismiss();
+    setMarkersLoaded(false);
 
     findParkingNearLocation(query).then(async (data) => {
       if (data?.places) {
@@ -155,6 +160,7 @@ export default function HomeScreen() {
         )
         const filteredData = transformed.filter((p) => p.name && p.address && p.location?.latitude && p.location?.longitude);
         setParkingData(filteredData);
+        setTimeout(() => setMarkersLoaded(true), 300);
       }
       else {
         console.log("No data found");
@@ -163,9 +169,30 @@ export default function HomeScreen() {
     })
   }
 
+  const panToRegion = (location: ParkingPlace[]) => {
+    if (!mapRef.current || location.length === 0) return;
+
+    const coords = location
+    .filter((loc) => loc.location?.latitude && loc.location?.longitude)
+    .map((loc) => ({
+      latitude: loc.location.latitude,
+      longitude: loc.location.longitude,
+    }));
+
+    mapRef.current.fitToCoordinates(coords, {
+      edgePadding: {
+        top: 80,
+        right: 80,
+        left: 80,
+        bottom: 80,
+      },
+      animated: true,
+    });
+  };
+
   const handleRegionChange = async (region: Region) => {
     setNewRegion(region);
-    const mapCenterAdd = await getAddress(newRegion.latitude, newRegion.longitude);
+    const mapCenterAdd = await getAddress(region.latitude, region.longitude);
     if (mapCenterAdd) {
       fetchParking(mapCenterAdd);
     }
@@ -201,9 +228,17 @@ export default function HomeScreen() {
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
         showsUserLocation
-        onPress={() => {setSelectedLocation(null), setSelectedMarker(null), Keyboard.dismiss()}}
+        onPress={() => {
+          if (markerTapRef.current) {
+            markerTapRef.current = false;
+            return;
+          }
+          setSelectedLocation(null);
+          setSelectedMarker(null);
+          Keyboard.dismiss();
+        }}
       >
-        {parkingData.map((place, index) =>
+        {parkingData.map((place) =>
           place.location ? (
             <Marker
               ref={(ref) => {
@@ -214,8 +249,11 @@ export default function HomeScreen() {
               coordinate={place.location} 
               title={place.name}
               anchor={{ x: 0.5, y: 1}}
-              pinColor={selectedMarker === `${place.name}-${place.id}` ? "blue" : "red"}
-              onPress={() => handleLocationClick(place, `${place.name}-${place.id}`)}
+              pinColor={selectedMarker === `${place.name}-${place.id}` ? "pink" : "red"}
+              onPress={() => {
+                markerTapRef.current = true;
+                handleLocationClick(place, `${place.name}-${place.id}`);
+              }}
             />
           ) : null
         )}
@@ -226,13 +264,12 @@ export default function HomeScreen() {
           status="danger"
           placeholder="Search"
           accessoryLeft={searchIcon}
-          onSubmitEditing={() => {fetchParking(searchQuery)}}
+          onSubmitEditing={() => {fetchParking(searchQuery);}}
           style={styles.searchBar}
         />
       <BottomSheet
         ref={bottomSheetRef}
         snapPoints={snapPoints}
-        onChange={handleSheetChanges}
         index={0}
         enableContentPanningGesture={false}
         enableDynamicSizing={false}
@@ -242,17 +279,21 @@ export default function HomeScreen() {
           {selectedLocation ? (
             <LocationInfoCard name={selectedLocation.name} address={selectedLocation.address} id={selectedLocation.id} />
           ) : (
-            <BottomSheetFlatList
+            markersLoaded ?
+            (<BottomSheetFlatList
             data={parkingData}
-            keyExtractor={(item, index) => `${item.name}-${item.id}`}
-            renderItem={({ item, index }) => (
+            keyExtractor={(item) => `${item.name}-${item.id}`}
+            renderItem={({ item }) => (
               <Pressable onPress={() => handleLocationClick(item, `${item.name}-${item.id}`)}>
                 <ParkingCard name={item.name} address={item.address} id={item.id} location={item.location} />
               </Pressable>
             )}
             ListEmptyComponent={<Text>No Parking Found</Text>}
             contentContainerStyle={{ paddingBottom: 80 }}
-            />
+            />) :
+            (<View>
+              <Spinner size="giant"/>
+            </View>)
           )}
         </BottomSheetView>
       </BottomSheet>

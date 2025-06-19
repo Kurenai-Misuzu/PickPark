@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 // check for google api
-console.log("GOOGLE API KEY:", process.env.EXPO_PUBLIC_GOOGLE_API_KEY);
+//console.log("GOOGLE API KEY:", process.env.EXPO_PUBLIC_GOOGLE_API_KEY);
 let googleAPI: string;
 
 if (process.env.EXPO_PUBLIC_GOOGLE_API_KEY) {
@@ -8,7 +8,7 @@ if (process.env.EXPO_PUBLIC_GOOGLE_API_KEY) {
 } else {
   throw new Error("Google API key missing!");
 }
-console.log("🔑 GOOGLE API KEY:", googleAPI);
+//console.log("🔑 GOOGLE API KEY:", googleAPI);
 
 // function that finds parking near the given location
 // example: findParkingNearLocation("bellevuecollege");
@@ -37,17 +37,11 @@ export async function findParkingNearLocation(location: string): Promise<any> {
     });
 
     const data = await response.json();
-    console.log("Google API raw response:", data);
 
-    // If the API request fails
-    console.log("Google Places API responded:", data);
+    // Response from Google Maps
+    //console.log("Google API raw response:", data);
 
     // Only bail if no places exist
-    if (!data.places || data.places.length === 0) {
-      console.warn("No places returned from Google API.");
-      return [];
-    }
-    // If there are no results
     if (!data.places || data.places.length === 0) {
       console.warn("No places returned from Google API.");
       return [];
@@ -63,7 +57,7 @@ export async function findParkingNearLocation(location: string): Promise<any> {
           displayName_text: place.displayName?.text ?? "Unknown",
         });
 
-      console.log("Upsert result:", insertResult);
+      //console.log("Upsert result:", insertResult);
       if (error) {
         console.error("Supabase insert error message:", error.message);
         console.error(

@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 // check for google api
-console.log("GOOGLE API KEY:", process.env.EXPO_PUBLIC_GOOGLE_API_KEY);
+//console.log("GOOGLE API KEY:", process.env.EXPO_PUBLIC_GOOGLE_API_KEY);
 let googleAPI: string;
 
 if (process.env.EXPO_PUBLIC_GOOGLE_API_KEY) {
@@ -8,19 +8,25 @@ if (process.env.EXPO_PUBLIC_GOOGLE_API_KEY) {
 } else {
   throw new Error("Google API key missing!");
 }
+//console.log("🔑 GOOGLE API KEY:", googleAPI);
 
 // function that finds parking near the given location
 // example: findParkingNearLocation("bellevuecollege");
 // returns promise (json with place array)
 export async function findParkingNearLocation(location: string): Promise<any> {
   const url = "https://places.googleapis.com/v1/places:searchText";
+  const googleAPI = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+
+  if (!googleAPI) throw new Error("Google API key missing!");
+
   const header = {
     "Content-Type": "application/json",
     "X-Goog-Api-Key": googleAPI,
     "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress",
   };
+
   const body = {
-    textQuery: "Parking near ".concat(location),
+    textQuery: "Parking near " + location,
   };
 
   try {
@@ -30,43 +36,41 @@ export async function findParkingNearLocation(location: string): Promise<any> {
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      // Handle HTTP errors (e.g., 400, 401, 403, 404, 500)
-      // const errorData = await response.json(); // Attempt to read error details if available
-      // throw new Error(
-      //   `HTTP error! Status: ${response.status}, Details: ${JSON.stringify(errorData)}`,
-      // );
-      // Try to read error as text (sometimes json() fails)
-      const errorText = await response.text();
-      console.error(
-        "HTTP error! Status:",
-        response.status,
-        "Error body:",
-        errorText,
-      );
-      throw new Error(
-        `HTTP error! status: ${response.status}, body: ${errorText}`,
-      );
-    }
-
-    // get data from google
     const data = await response.json();
 
-    // THIS IS HOW TO GET THE DATA FROM THE PROMISE OF DATA
-    // add to supabase
-    for (const x in data.places) {
-      const { error } = await supabase.from("Locations").upsert({
-        id: data.places[x].id,
-        formattedAddress: data.places[x].formattedAddress,
-        displayName_text: data.places[x].displayName.text,
-      });
+    // Response from Google Maps
+    //console.log("Google API raw response:", data);
 
-      if (error) throw error;
+    // Only bail if no places exist
+    if (!data.places || data.places.length === 0) {
+      console.warn("No places returned from Google API.");
+      return [];
+    }
+
+    // Save results to Supabase
+    for (const place of data.places) {
+      const { data: insertResult, error } = await supabase
+        .from("Locations")
+        .upsert({
+          id: place.id,
+          formattedAddress: place.formattedAddress,
+          displayName_text: place.displayName?.text ?? "Unknown",
+        });
+
+      //console.log("Upsert result:", insertResult);
+      if (error) {
+        console.error("Supabase insert error message:", error.message);
+        console.error(
+          "Supabase insert full error:",
+          JSON.stringify(error, null, 2),
+        );
+        throw error;
+      }
     }
 
     return data;
   } catch (error: any) {
     console.error("Error searching places:", error);
-    throw error; // Re-throw the error for the caller to handle
+    return [];
   }
 }

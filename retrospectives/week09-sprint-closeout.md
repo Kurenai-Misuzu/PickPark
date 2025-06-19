@@ -1,22 +1,27 @@
-# Completed Tasks 
+# Completed Tasks
+
 - Login and registration functionality completed and linked to Supabase auth and User table
 - Fetching from Google Maps API and Geo-coding on both the map and the dynamic list
 - React Query setup
 - Testing for bottom list and login functionality
 
-# Unfinished Tasks 
-- Profile information 
+# Unfinished Tasks
 
-# Bugs or Blockers 
-- None 
+- Profile information
 
-# Key wins 
-- Everyone communicates effectively 
-- Got work done early 
+# Bugs or Blockers
 
-# Next Sprint Priorities 
-- Search bar functionality - Jesse
+- None
+
+# Key wins
+
+- Everyone communicates effectively
+- Got work done early
+
+# Next Sprint Priorities
+
+- Search bar functionality - Nick
 - Profile information/logout - Jesse
 - Favorting functionality - Nick
-- Review functionality, with Supabase - Dylan 
+- Review functionality, with Supabase - Dylan
 - Testing functionality for markers and other UI - James

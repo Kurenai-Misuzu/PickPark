@@ -1,9 +1,12 @@
 import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, Keyboard, View } from "react-native";
 import Geocoder from 'react-native-geocoding';
+import Location from 'expo-location';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
+import { Input, Icon, IconElement, IconProps, Spinner } from "@ui-kitten/components";
+import { useLocalSearchParams } from "expo-router";
 
 import ParkingCard from "@/components/ParkingCard";
 import LocationInfoCard from "@/components/LocationInfoCard";
@@ -16,11 +19,21 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<Record<string, any>>({});
+  const markerTapRef = useRef(false);
+  const userInteracting = useRef(false);
 
   const snapPoints = useMemo(() => ["35%", "60%", "85%"], []);
   const [parkingData, setParkingData] = useState<ParkingPlace[]>([])
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<ParkingPlace | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [markersLoaded, setMarkersLoaded] = useState(false);
+
+  // Get faveCard info and set it locally
+  const { lat, lng, key } = useLocalSearchParams();
+  const latitude = lat ? parseFloat(lat as string) : null;
+  const longitude = lat ? parseFloat(lng as string) : null;
+  const locID = key;
 
   type ParkingPlace = {
     name: string;
@@ -35,40 +48,108 @@ export default function HomeScreen() {
   const [newRegion, setNewRegion] = useState({
     latitude: 47.61871908877952,
     longitude: -122.34557096646287,
-    latitudeDelta: 1,
-    longitudeDelta: 1,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
   })
 
+  const searchIcon = (props: IconProps): IconElement => (
+    <Pressable onPress={() => {fetchParking(searchQuery)}}>
+      <Icon {...props} name="search" fill="maroon" />
+    </Pressable>
+  );
+
+  // Fetch locations on start up
   useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.error("Location permissions denied");
+        return;
+      }
+
+      const {
+        coords: { latitude, longitude }
+      } = await Location.getCurrentPositionAsync({});
+
+      setNewRegion({
+        latitude,
+        longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      });
+    });
     handleRegionChange(newRegion)
   }, [])
+
+  // Find faveCard location and zoom in
+  useEffect(() => {
+    if (longitude && latitude && locID) {
+      const region = {
+        latitude,
+        longitude, 
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      };
+
+      mapRef.current?.animateToRegion(region);
+
+      const closestMatch = parkingData.find(
+        (p) => Math.abs(p.location.latitude - latitude) < 0.0001 && Math.abs(p.location.longitude - longitude) < 0.0001
+      );
+
+      if (closestMatch) {
+        const key = `${closestMatch.name}-${closestMatch.id}`;
+        setSelectedMarker(key);
+        setSelectedLocation(closestMatch);
+        setTimeout(() => {
+          markerRef.current[key]?.showCallout();
+        }, 300);
+      }
+    }
+  }, [locID])
+
+  useEffect(() => {
+    if (markersLoaded && parkingData.length > 0) {
+      panToRegion(parkingData);
+    }
+  }, [markersLoaded])
 
   async function getCoordinates(address: string) {
     try {
       const response = await Geocoder.from(address);
       const location = response.results[0].geometry.location;
       if (location) {
-        return { latitude: location.lat, longitude: location.lng}
+        return { latitude: location.lat, longitude: location.lng};
       }
     }
     catch (error) {
-      console.log("Error while geocoding:", error)
+      console.log("Error while geocoding:", error);
       return null;
     }
   }
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("Sheet index", index);
-  }, []);
+  async function getAddress(lat: number, lng: number) {
+    try {
+      const response = await Geocoder.from(lat, lng);
+      const address = response.results[0].formatted_address;
+      if (address) {
+        return address;
+      }
+    }
+    catch (error) {
+      console.log("Error while reverse-geocoding:", error);
+      return null;
+    }
+  }
 
-  const handleRegionChange = async (region: Region) => {
-    setNewRegion(region);
+  const fetchParking = async (query: string) => {
+    Keyboard.dismiss();
+    setMarkersLoaded(false);
 
-    findParkingNearLocation("Seattle").then(async (data) => {
+    findParkingNearLocation(query).then(async (data) => {
       if (data?.places) {
         const transformed = await Promise.all(
           data.places.map(async (place: any) => {
-            const coords = await getCoordinates(place.formattedAddress)
             return {
               name: place.displayName?.text ?? "Unknown",
               address: place.formattedAddress ?? "Unknown",
@@ -79,12 +160,42 @@ export default function HomeScreen() {
         )
         const filteredData = transformed.filter((p) => p.name && p.address && p.location?.latitude && p.location?.longitude);
         setParkingData(filteredData);
+        setTimeout(() => setMarkersLoaded(true), 300);
       }
       else {
         console.log("No data found");
         setParkingData([]);
       }
     })
+  }
+
+  const panToRegion = (location: ParkingPlace[]) => {
+    if (!mapRef.current || location.length === 0) return;
+
+    const coords = location
+    .filter((loc) => loc.location?.latitude && loc.location?.longitude)
+    .map((loc) => ({
+      latitude: loc.location.latitude,
+      longitude: loc.location.longitude,
+    }));
+
+    mapRef.current.fitToCoordinates(coords, {
+      edgePadding: {
+        top: 80,
+        right: 80,
+        left: 80,
+        bottom: 80,
+      },
+      animated: true,
+    });
+  };
+
+  const handleRegionChange = async (region: Region) => {
+    setNewRegion(region);
+    const mapCenterAdd = await getAddress(region.latitude, region.longitude);
+    if (mapCenterAdd) {
+      fetchParking(mapCenterAdd);
+    }
   }
 
   const handleLocationClick = (place: ParkingPlace, key: string) => {
@@ -107,36 +218,58 @@ export default function HomeScreen() {
       <MapView
         style={styles.map}
         initialRegion={newRegion}
-        onRegionChangeComplete={handleRegionChange}
+        onPanDrag={() => {userInteracting.current = true}}
+        onRegionChangeComplete={(region => {
+          if (userInteracting.current) {
+            handleRegionChange(region);
+            userInteracting.current = false;
+          }
+        })}
         provider={PROVIDER_GOOGLE}
         ref={mapRef}
         showsUserLocation
-        onPress={() => {setSelectedLocation(null)}}
+        onPress={() => {
+          if (markerTapRef.current) {
+            markerTapRef.current = false;
+            return;
+          }
+          setSelectedLocation(null);
+          setSelectedMarker(null);
+          Keyboard.dismiss();
+        }}
       >
-        {parkingData.map((place, index) =>
+        {parkingData.map((place) =>
           place.location ? (
             <Marker
               ref={(ref) => {
-                markerRef.current[`${place.name}-${index}`] = ref;
+                markerRef.current[`${place.name}-${place.id}`] = ref;
               }}
-              key={`${place.name}-${index}`}
-              identifier={`${place.name}-${index}`}
+              key={`${place.name}-${place.id}`}
+              identifier={`${place.name}-${place.id}`}
               coordinate={place.location} 
               title={place.name}
               anchor={{ x: 0.5, y: 1}}
-              pinColor={selectedMarker === `${place.name}-${index}` ? "blue" : "red"}
-              onPress={() => handleLocationClick(place, `${place.name}-${index}`)}
+              pinColor={selectedMarker === `${place.name}-${place.id}` ? "pink" : "red"}
+              onPress={() => {
+                markerTapRef.current = true;
+                handleLocationClick(place, `${place.name}-${place.id}`);
+              }}
             />
           ) : null
         )}
       </MapView>
-      <View style={styles.searchBar}>
-        <TextInput placeholder="Search"></TextInput>
-      </View>
+        <Input
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          status="danger"
+          placeholder="Search"
+          accessoryLeft={searchIcon}
+          onSubmitEditing={() => {fetchParking(searchQuery);}}
+          style={styles.searchBar}
+        />
       <BottomSheet
         ref={bottomSheetRef}
         snapPoints={snapPoints}
-        onChange={handleSheetChanges}
         index={0}
         enableContentPanningGesture={false}
         enableDynamicSizing={false}
@@ -146,17 +279,21 @@ export default function HomeScreen() {
           {selectedLocation ? (
             <LocationInfoCard name={selectedLocation.name} address={selectedLocation.address} id={selectedLocation.id} />
           ) : (
-            <BottomSheetFlatList
-              data={parkingData}
-              keyExtractor={(item, index) => `${item.name}-${index}`}
-              renderItem={({ item, index }) => (
-                <Pressable onPress={() => handleLocationClick(item, `${item.name}-${index}`)}>
-                  <ParkingCard name={item.name} address={item.address} />
-                </Pressable>
-              )}
-              ListEmptyComponent={<Text>No parking found</Text>}
-              contentContainerStyle={{ paddingBottom: 80 }}
-            />
+            markersLoaded ?
+            (<BottomSheetFlatList
+            data={parkingData}
+            keyExtractor={(item) => `${item.name}-${item.id}`}
+            renderItem={({ item }) => (
+              <Pressable onPress={() => handleLocationClick(item, `${item.name}-${item.id}`)}>
+                <ParkingCard name={item.name} address={item.address} id={item.id} location={item.location} />
+              </Pressable>
+            )}
+            ListEmptyComponent={<Text>No Parking Found</Text>}
+            contentContainerStyle={{ paddingBottom: 80 }}
+            />) :
+            (<View>
+              <Spinner size="giant"/>
+            </View>)
           )}
         </BottomSheetView>
       </BottomSheet>
@@ -170,7 +307,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: "100%",
+    height: "75%",
   },
   sheetContent: {
     flex: 1,
@@ -185,7 +322,7 @@ const styles = StyleSheet.create({
     paddingLeft: "5%",
     zIndex: 10,
     backgroundColor: "white",
-    width: "80%",
+    width: 300,
     borderRadius: 15,
     borderColor: "maroon",
     borderWidth: 1,

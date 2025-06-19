@@ -23,13 +23,12 @@ export default function LoginScreen() {
     const loginError = await login(values.email, values.password);
     setSubmitting(false);
     if (loginError) setErrors({ email: loginError });
-    else router.push("/(tabs)");
+    // else router.push("/(tabs)");
   };
 
-  const loginUser = () => {
-    router.push({
-      pathname: "/(tabs)",
-    });
+  // DELETE THIS AND BUTTON BEFORE PRESENTATION!
+  const loginAdmin = async () => {
+    const loginError = await login("admin@admin.com", "password");
   };
 
   const toSignUp = () => {
@@ -100,7 +99,7 @@ export default function LoginScreen() {
         <Button
           title="Log In (Logs in without auth)"
           onPress={() => {
-            loginUser();
+            loginAdmin();
           }}
           color="#800000"
         />

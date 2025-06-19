@@ -1,7 +1,7 @@
+import { AuthGate } from "@/components/AuthGate";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { FaveProvider } from "@/contexts/FaveContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Appearance } from "react-native";
 import * as eva from "@eva-design/eva";
 import {
   DarkTheme,
@@ -14,6 +14,7 @@ import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { Appearance } from "react-native";
 import "react-native-reanimated";
 
 export default function RootLayout() {
@@ -36,25 +37,30 @@ export default function RootLayout() {
         <IconRegistry icons={EvaIconsPack} />
         <ApplicationProvider {...eva} theme={eva.light}>
           <AuthProvider>
-            <FaveProvider>
-              <Stack initialRouteName="(login-regi)/login">
-                <Stack.Screen
-                  name="(login-regi)/login"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="(login-regi)/register"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="(misc)/review"
-                  options={{ headerShown: false, title: "Reviews" }}
-                />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-              <StatusBar style="auto" />
-            </FaveProvider>
+            <AuthGate>
+              <FaveProvider>
+                <Stack>
+                  <Stack.Screen
+                    name="(login-regi)/login"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(login-regi)/register"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(misc)/review"
+                    options={{ headerShown: false, title: "Reviews" }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+                <StatusBar style="auto" />
+              </FaveProvider>
+            </AuthGate>
           </AuthProvider>
         </ApplicationProvider>
       </ThemeProvider>

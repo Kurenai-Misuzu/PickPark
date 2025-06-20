@@ -2,19 +2,15 @@ import { ThemedText } from "@/components/ThemedText";
 import { supabase } from "@/data/supabase";
 import { useWriteLocationInfo } from "@/data/useWriteLocationInfo";
 import { useWriteReviews } from "@/data/useWriteReviews";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
+import { IndexPath, Select, SelectItem } from "@ui-kitten/components";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
-import {
-  Button,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-} from "react-native";
+import { Button, SafeAreaView, StyleSheet, TextInput } from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as Yup from "yup";
+
+// RED SQUIGGLYS ON ROW ARE OK. AT LEAST IT DOESN'T SEEM TO CAUSE ANY ERRORS
 
 async function getUserId() {
   const { data: user, error } = await supabase.auth.getUser();
@@ -40,6 +36,12 @@ export default function ReviewScreen() {
   const [showOpeningTimePicker, setShowOpeningTimePicker] = useState(false);
   const [showClosingTimePicker, setShowClosingTimePicker] = useState(false);
 
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath | IndexPath[]>(
+    new IndexPath(0),
+  );
+
+  const paymentOptions = ["Hourly", "Daily", "Per Minute"];
+  const displayValue = paymentOptions[selectedIndex.row];
   const writeReviews = useWriteReviews();
   const writeLocationInfo = useWriteLocationInfo();
   const localParams = useLocalSearchParams();
@@ -71,7 +73,7 @@ export default function ReviewScreen() {
             second: "2-digit",
             hour12: false,
           }),
-          paymentType: values.PaymentType,
+          paymentType: paymentOptions[selectedIndex.row],
           priceHourly: values.PriceHourly,
         });
 
@@ -118,21 +120,18 @@ export default function ReviewScreen() {
             {values.OpeningTime.toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
-              hour12: false,
+              hour12: true,
             })}{" "}
           </ThemedText>
-          {showOpeningTimePicker && (
-            <DateTimePicker
-              value={values.OpeningTime}
-              mode="time"
-              onChange={(event, selectedDate) => {
-                setShowOpeningTimePicker(Platform.OS === "ios");
-                if (selectedDate) {
-                  setFieldValue("OpeningTime", selectedDate);
-                }
-              }}
-            />
-          )}
+          <DateTimePickerModal
+            isVisible={showOpeningTimePicker}
+            mode="time"
+            onConfirm={(time) => {
+              setFieldValue("OpeningTime", time);
+              setShowOpeningTimePicker(false);
+            }}
+            onCancel={() => setShowOpeningTimePicker(false)}
+          />
           {/* // CLOSING */}
           <Button
             title="change closing time"
@@ -143,40 +142,38 @@ export default function ReviewScreen() {
             {values.ClosingTime.toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
-              hour12: false,
+              hour12: true,
             })}{" "}
           </ThemedText>
-          {showClosingTimePicker && (
-            <DateTimePicker
-              value={values.ClosingTime}
-              mode="time"
-              onChange={(event, selectedDate) => {
-                setShowClosingTimePicker(Platform.OS === "ios");
-                if (selectedDate) {
-                  setFieldValue("ClosingTime", selectedDate);
-                }
-              }}
-            />
-          )}
+          <DateTimePickerModal
+            isVisible={showClosingTimePicker}
+            mode="time"
+            onConfirm={(time) => {
+              setFieldValue("ClosingTime", time);
+              setShowClosingTimePicker(false);
+            }}
+            onCancel={() => setShowClosingTimePicker(false)}
+          />
           {/* // PAYMENT TYPE */}
           <ThemedText>Payment Type</ThemedText>
-          <Picker
-            selectedValue={undefined}
-            onValueChange={(itemValue) =>
-              setFieldValue("PaymentType", itemValue)
-            }
+          <Select
+            value={displayValue}
+            selectedIndex={selectedIndex}
+            onSelect={(index) => {
+              setSelectedIndex(index);
+            }}
           >
-            <Picker.Item label="Hourly" value="Hourly" />
-            <Picker.Item label="Daily" value="Daily" />
-            <Picker.Item label="Per Minute" value="Per Minute" />
-          </Picker>
+            <SelectItem title="Hourly" />
+            <SelectItem title="Daily" />
+            <SelectItem title="Per Minute" />
+          </Select>
           {touched.PaymentType && errors.PaymentType && (
             <ThemedText style={styles.errorMsg}>
               {errors.PaymentType}
             </ThemedText>
           )}
           {/* // RATE */}
-          <ThemedText>Rate</ThemedText>
+          <ThemedText>Payment Rate</ThemedText>
           <TextInput
             value={values.PriceHourly.toString()}
             onChangeText={handleChange("PriceHourly")}
@@ -201,7 +198,7 @@ export default function ReviewScreen() {
             <ThemedText style={styles.errorMsg}>{errors.ReviewText}</ThemedText>
           )}
 
-          <Button title="submit test" onPress={() => handleSubmit()}></Button>
+          <Button title="submit Review" onPress={() => handleSubmit()}></Button>
         </SafeAreaView>
       )}
     </Formik>

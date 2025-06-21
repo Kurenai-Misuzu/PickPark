@@ -2,11 +2,17 @@ import { ThemedText } from "@/components/ThemedText";
 import { supabase } from "@/data/supabase";
 import { useWriteLocationInfo } from "@/data/useWriteLocationInfo";
 import { useWriteReviews } from "@/data/useWriteReviews";
-import { IndexPath, Select, SelectItem } from "@ui-kitten/components";
+import {
+  Button,
+  IndexPath,
+  Input,
+  Select,
+  SelectItem,
+} from "@ui-kitten/components";
 import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
-import { Button, SafeAreaView, StyleSheet, TextInput } from "react-native";
+import { StyleSheet, View } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as Yup from "yup";
 
@@ -109,108 +115,158 @@ export default function ReviewScreen() {
         touched,
         setFieldValue,
       }) => (
-        <SafeAreaView style={styles.test}>
-          {/* // OPENING */}
-          <Button
-            title="change opening time"
-            onPress={() => setShowOpeningTimePicker(true)}
-          />
-          <ThemedText>
-            {" "}
-            {values.OpeningTime.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}{" "}
-          </ThemedText>
-          <DateTimePickerModal
-            isVisible={showOpeningTimePicker}
-            mode="time"
-            onConfirm={(time) => {
-              setFieldValue("OpeningTime", time);
-              setShowOpeningTimePicker(false);
-            }}
-            onCancel={() => setShowOpeningTimePicker(false)}
-          />
-          {/* // CLOSING */}
-          <Button
-            title="change closing time"
-            onPress={() => setShowClosingTimePicker(true)}
-          />
-          <ThemedText>
-            {" "}
-            {values.ClosingTime.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}{" "}
-          </ThemedText>
-          <DateTimePickerModal
-            isVisible={showClosingTimePicker}
-            mode="time"
-            onConfirm={(time) => {
-              setFieldValue("ClosingTime", time);
-              setShowClosingTimePicker(false);
-            }}
-            onCancel={() => setShowClosingTimePicker(false)}
-          />
-          {/* // PAYMENT TYPE */}
-          <ThemedText>Payment Type</ThemedText>
-          <Select
-            value={displayValue}
-            selectedIndex={selectedIndex}
-            onSelect={(index) => {
-              setSelectedIndex(index);
-            }}
-          >
-            <SelectItem title="Hourly" />
-            <SelectItem title="Daily" />
-            <SelectItem title="Per Minute" />
-          </Select>
-          {touched.PaymentType && errors.PaymentType && (
-            <ThemedText style={styles.errorMsg}>
-              {errors.PaymentType}
-            </ThemedText>
-          )}
-          {/* // RATE */}
-          <ThemedText>Payment Rate</ThemedText>
-          <TextInput
-            value={values.PriceHourly.toString()}
-            onChangeText={handleChange("PriceHourly")}
-            onBlur={handleBlur("PriceHourly")}
-            placeholder={undefined}
-            inputMode="numeric"
-          />
-          {touched.PriceHourly && errors.PriceHourly && (
-            <ThemedText style={styles.errorMsg}>
-              {errors.PriceHourly}
-            </ThemedText>
-          )}
-          {/* // REVIEW */}
-          <ThemedText>Review</ThemedText>
-          <TextInput
-            value={values.ReviewText}
-            onChangeText={handleChange("ReviewText")}
-            onBlur={handleBlur("ReviewText")}
-            placeholder="Review"
-          />
-          {touched.ReviewText && errors.ReviewText && (
-            <ThemedText style={styles.errorMsg}>{errors.ReviewText}</ThemedText>
-          )}
+        <View style={styles.pageInner}>
+          <View style={styles.components}>
+            {/* // OPENING */}
+            <View style={styles.timeContainer}>
+              <Button
+                style={styles.button}
+                appearance="filled"
+                onPress={() => setShowOpeningTimePicker(true)}
+              >
+                Opening Time
+              </Button>
+              <ThemedText style={styles.time}>
+                {" "}
+                {values.OpeningTime.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}{" "}
+              </ThemedText>
+              <DateTimePickerModal
+                isVisible={showOpeningTimePicker}
+                mode="time"
+                onConfirm={(time) => {
+                  setFieldValue("OpeningTime", time);
+                  setShowOpeningTimePicker(false);
+                }}
+                onCancel={() => setShowOpeningTimePicker(false)}
+              />
+            </View>
 
-          <Button title="submit Review" onPress={() => handleSubmit()}></Button>
-        </SafeAreaView>
+            {/* // CLOSING */}
+            <View style={styles.timeContainer}>
+              <Button
+                style={styles.button}
+                appearance="filled"
+                onPress={() => setShowClosingTimePicker(true)}
+              >
+                Closing Time
+              </Button>
+              <ThemedText style={styles.time}>
+                {" "}
+                {values.ClosingTime.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}{" "}
+              </ThemedText>
+              <DateTimePickerModal
+                isVisible={showClosingTimePicker}
+                mode="time"
+                onConfirm={(time) => {
+                  setFieldValue("ClosingTime", time);
+                  setShowClosingTimePicker(false);
+                }}
+                onCancel={() => setShowClosingTimePicker(false)}
+              />
+            </View>
+          </View>
+          {/* // PAYMENT TYPE */}
+          <View style={styles.components}>
+            <ThemedText>Payment Type</ThemedText>
+            <Select
+              value={displayValue}
+              selectedIndex={selectedIndex}
+              onSelect={(index) => {
+                setSelectedIndex(index);
+              }}
+            >
+              <SelectItem title="Hourly" />
+              <SelectItem title="Daily" />
+              <SelectItem title="Per Minute" />
+            </Select>
+            {touched.PaymentType && errors.PaymentType && (
+              <ThemedText style={styles.errorMsg}>
+                {errors.PaymentType}
+              </ThemedText>
+            )}
+            {/* // RATE */}
+            <ThemedText>Payment Rate (USD)</ThemedText>
+            <Input
+              value={undefined}
+              onChangeText={handleChange("PriceHourly")}
+              onBlur={handleBlur("PriceHourly")}
+              placeholder={values.PriceHourly.toString()}
+              inputMode="numeric"
+            />
+            {touched.PriceHourly && errors.PriceHourly && (
+              <ThemedText style={styles.errorMsg}>
+                {errors.PriceHourly}
+              </ThemedText>
+            )}
+          </View>
+          {/* // REVIEW */}
+          <View style={styles.components}>
+            <ThemedText>Review</ThemedText>
+            <Input
+              textStyle={styles.reviewBox}
+              multiline={true}
+              value={values.ReviewText}
+              onChangeText={handleChange("ReviewText")}
+              onBlur={handleBlur("ReviewText")}
+              placeholder="Review"
+            />
+            {touched.ReviewText && errors.ReviewText && (
+              <ThemedText style={styles.errorMsg}>
+                {errors.ReviewText}
+              </ThemedText>
+            )}
+          </View>
+          <View style={styles.components}>
+            <Button
+              style={styles.button}
+              appearance="filled"
+              onPress={() => handleSubmit()}
+            >
+              Submit Review
+            </Button>
+          </View>
+        </View>
       )}
     </Formik>
   );
 }
 
 const styles = StyleSheet.create({
-  test: {
-    margin: 30,
+  pageInner: {
+    padding: 30,
+    paddingTop: "10%",
+    paddingBottom: "10%",
   },
   errorMsg: {
     color: "#ff0000",
     marginHorizontal: 10,
+  },
+  components: {
+    marginVertical: 5,
+  },
+  timeContainer: {
+    flexDirection: "row",
+    margin: 1,
+  },
+  time: {
+    alignItems: "flex-end",
+    textAlign: "right",
+    alignSelf: "center",
+    marginLeft: "auto",
+  },
+  button: {
+    borderColor: "maroon",
+    backgroundColor: "maroon",
+  },
+  reviewBox: {
+    minHeight: 64,
   },
 });

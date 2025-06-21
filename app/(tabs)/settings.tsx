@@ -74,7 +74,6 @@ export default function SettingsScreen() {
       setStatus(profileError.message);
     } else {
       setStatus("Profile updated!");
-      // Optionally, refetch profile
     }
   };
 

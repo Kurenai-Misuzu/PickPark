@@ -2,15 +2,17 @@ import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/botto
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, Keyboard, View } from "react-native";
 import Geocoder from 'react-native-geocoding';
-import Location from 'expo-location';
+import * as Location from 'expo-location';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MapView, {Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { Input, Icon, IconElement, IconProps, Spinner } from "@ui-kitten/components";
 import { useLocalSearchParams } from "expo-router";
+import { Appearance } from "react-native";
 
 import ParkingCard from "@/components/ParkingCard";
 import LocationInfoCard from "@/components/LocationInfoCard";
 import { findParkingNearLocation } from "@/data/findParkingNearLocation";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function HomeScreen() {
   if (process.env.EXPO_PUBLIC_GOOGLE_API_KEY) {
@@ -28,6 +30,8 @@ export default function HomeScreen() {
   const [selectedLocation, setSelectedLocation] = useState<ParkingPlace | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [markersLoaded, setMarkersLoaded] = useState(false);
+
+  const colorScheme = useColorScheme();
 
   // Get faveCard info and set it locally
   const { lat, lng, key } = useLocalSearchParams();
@@ -52,6 +56,83 @@ export default function HomeScreen() {
     longitudeDelta: 0.05,
   })
 
+  const darkThemeMap = [
+    { elementType: "geometry", stylers: [{ color: "#212121" }] },
+    { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+    { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+    { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
+    {
+      featureType: "administrative",
+      elementType: "geometry",
+      stylers: [{ color: "#757575" }],
+    },
+    {
+      featureType: "administrative.country",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#9e9e9e" }],
+    },
+    {
+      featureType: "landscape",
+      elementType: "geometry",
+      stylers: [{ color: "#2c2c2c" }],
+    },
+    {
+      featureType: "poi",
+      elementType: "geometry",
+      stylers: [{ color: "#2c2c2c" }],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [{ color: "#263c3f" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry",
+      stylers: [{ color: "#383838" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#212121" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [{ color: "#3c3c3c" }],
+    },
+    {
+      featureType: "road.highway.controlled_access",
+      elementType: "geometry",
+      stylers: [{ color: "#4e4e4e" }],
+    },
+    {
+      featureType: "road.local",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#616161" }],
+    },
+    {
+      featureType: "transit",
+      elementType: "geometry",
+      stylers: [{ color: "#2f3948" }],
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: "#000923" }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#3d3d3d" }],
+    },
+    {
+      featureType: "landscape.natural.terrain",
+      elementType: "geometry",
+      stylers: [{ visibility: "on" }, { color: "#1a1a1a" }],
+    },
+  ];
+
   const searchIcon = (props: IconProps): IconElement => (
     <Pressable onPress={() => {fetchParking(searchQuery)}}>
       <Icon {...props} name="search" fill="maroon" />
@@ -61,24 +142,32 @@ export default function HomeScreen() {
   // Fetch locations on start up
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.error("Location permissions denied");
-        return;
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error("Location permissions denied");
+          return;
+        }
+
+        const {
+          coords: { latitude, longitude }
+        } = await Location.getCurrentPositionAsync({});
+
+        const userRegion = ({
+          latitude,
+          longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        });
+
+        setNewRegion(userRegion);
+        mapRef.current?.animateToRegion(userRegion);
+        handleRegionChange(userRegion);
       }
-
-      const {
-        coords: { latitude, longitude }
-      } = await Location.getCurrentPositionAsync({});
-
-      setNewRegion({
-        latitude,
-        longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      });
-    });
-    handleRegionChange(newRegion)
+      catch (error) {
+        console.error("Error getting location", error);
+      }
+    })();
   }, [])
 
   // Find faveCard location and zoom in
@@ -226,6 +315,7 @@ export default function HomeScreen() {
           }
         })}
         provider={PROVIDER_GOOGLE}
+        customMapStyle={Appearance.getColorScheme() === "dark" ? darkThemeMap : []}
         ref={mapRef}
         showsUserLocation
         onPress={() => {
@@ -265,7 +355,8 @@ export default function HomeScreen() {
           placeholder="Search"
           accessoryLeft={searchIcon}
           onSubmitEditing={() => {fetchParking(searchQuery);}}
-          style={styles.searchBar}
+          style={[styles.searchBar, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}
+          textStyle={{color: colorScheme === "light" ? "black" : "white"}}
         />
       <BottomSheet
         ref={bottomSheetRef}
@@ -274,8 +365,9 @@ export default function HomeScreen() {
         enableContentPanningGesture={false}
         enableDynamicSizing={false}
         topInset={0}
+        backgroundStyle={{backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}}
       >
-        <BottomSheetView style={styles.sheetContent}>
+        <BottomSheetView style={[styles.sheetContent]}>
           {selectedLocation ? (
             <LocationInfoCard name={selectedLocation.name} address={selectedLocation.address} id={selectedLocation.id} />
           ) : (
@@ -321,7 +413,7 @@ const styles = StyleSheet.create({
     left: 40,
     paddingLeft: "5%",
     zIndex: 10,
-    backgroundColor: "white",
+    //backgroundColor: colorScheme === "light" ? "white" : "gray",
     width: 300,
     borderRadius: 15,
     borderColor: "maroon",

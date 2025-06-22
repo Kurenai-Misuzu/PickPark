@@ -3,6 +3,7 @@ import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface LocationProps {
   name: string;
@@ -11,6 +12,7 @@ interface LocationProps {
 }
 
 const LocationInfoCard: React.FC<LocationProps> = ({ name, address, id }) => {
+  const colorScheme = useColorScheme();
   const { data, isLoading, error } = useQueryLocationInfo(id.toString());
   if (isLoading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
@@ -21,18 +23,18 @@ const LocationInfoCard: React.FC<LocationProps> = ({ name, address, id }) => {
   return (
     <BottomSheetView>
       <View style={styles.titleBar}>
-        <Text style={styles.placeName}>{name}</Text>
+        <Text style={[styles.placeName, {color: colorScheme === "light" ? "black" : "white"}]}>{name}</Text>
       </View>
       <BottomSheetScrollView>
-        <Text style={styles.infoText}>Address: {address}</Text>
-        <Text style={styles.infoText}>
+        <Text style={[styles.infoText, {color: colorScheme === "light" ? "black" : "white"}]}>Address: {address}</Text>
+        <Text style={[styles.infoText, {color: colorScheme === "light" ? "black" : "white"}]}>
           Hours: {locationData.open_time} AM - {locationData.closing_time}{" "}
           PM{" "}
         </Text>
-        <Text style={styles.infoText}>
+        <Text style={[styles.infoText, {color: colorScheme === "light" ? "black" : "white"}]}>
           Payment Type: {locationData.payment_type}{" "}
         </Text>
-        <Text style={styles.infoText}>Pay: ${locationData.price_hourly}</Text>
+        <Text style={[styles.infoText, {color: colorScheme === "light" ? "black" : "white"}]}>Pay: ${locationData.price_hourly}</Text>
         <View style={styles.reviewButton}>
           <Button
             title={"Add Review"}

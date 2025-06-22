@@ -1,22 +1,20 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import { Platform, View, Text } from "react-native";
-
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Background } from "@react-navigation/elements";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const appTheme = Colors[colorScheme ?? "light"];
 
   return (
     <Tabs
       screenOptions={{
-        //tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        tabBarActiveTintColor: "white",
+        tabBarActiveTintColor: appTheme.tabIconSelected,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -33,8 +31,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Search",
-          tabBarLabel: ({ color }) => (
-            <Text style={{ color: "black", fontSize: 14 }}>Search</Text>
+          tabBarLabel: () => (
+            <Text style={{ color: appTheme.text, fontSize: 14 }}>Search</Text>
           ),
           tabBarIcon: ({ color, focused }) => (
             // Error in name is fine, due to not assinging all MaterialIcon variables in IconSymbol />
@@ -61,8 +59,8 @@ export default function TabLayout() {
         name="favorites"
         options={{
           title: "Favorites",
-          tabBarLabel: ({ color }) => (
-            <Text style={{ color: "black", fontSize: 14 }}>Favorites</Text>
+          tabBarLabel: () => (
+            <Text style={{ color: appTheme.text, fontSize: 14 }}>Favorites</Text>
           ),
           headerShown: true,
           headerTitleAlign: "center",
@@ -91,8 +89,8 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: "Settings",
-          tabBarLabel: ({ color }) => (
-            <Text style={{ color: "black", fontSize: 14 }}>Settings</Text>
+          tabBarLabel: () => (
+            <Text style={{ color: appTheme.text, fontSize: 14 }}>Settings</Text>
           ),
           headerShown: true,
           headerTitleAlign: "center",

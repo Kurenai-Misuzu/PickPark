@@ -1,11 +1,12 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/data/supabase";
-import { Input, Button as KittenButton } from "@ui-kitten/components";
 import { router } from "expo-router";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View, StyleSheet, Appearance } from "react-native";
+import { Input, Button as KittenButton, Icon, IconElement, IconProps } from "@ui-kitten/components";
 import * as Yup from "yup";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 const SettingsSchema = Yup.object().shape({
   first_name: Yup.string().required("Required"),
@@ -21,6 +22,16 @@ export default function SettingsScreen() {
     last_name: string;
   } | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+
+  const colorScheme = useColorScheme();
+
+  const moonIcon = (props: IconProps): IconElement => (
+      <Icon {...props} name="moon" fill="white" />
+  );
+
+  const sunIcon = (props: IconProps): IconElement => (
+      <Icon {...props} name="sun" fill="white" />
+  );
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -82,6 +93,12 @@ export default function SettingsScreen() {
     router.replace("/(login-regi)/login");
   };
 
+  const toggleTheme = () => {
+    Appearance.setColorScheme(
+      Appearance.getColorScheme() === "dark" ? "light" : "dark"
+    )
+  }
+
   if (profileLoading || !profile || !user) {
     return (
       <View style={styles.centered}>
@@ -91,9 +108,9 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Hello, {profile.first_name}</Text>
-      <Text style={styles.subheader}>Profile information</Text>
+    <View style={[styles.container, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}>
+      <Text style={{fontSize: 30, marginBottom: 5, color: colorScheme === "light" ? "black" : "white"}}>Hello, {profile.first_name}</Text>
+      <Text style={{fontSize: 20, marginBottom: 10, color: colorScheme === "light" ? "black" : "white"}}>Profile information</Text>
       <Formik
         initialValues={{
           first_name: profile.first_name ?? "",
@@ -116,7 +133,8 @@ export default function SettingsScreen() {
           <View style={styles.form}>
             <Input
               label="First Name"
-              style={styles.input}
+              style={[styles.input, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}
+              textStyle={{color: colorScheme === "light" ? "black" : "white"}}
               onChangeText={handleChange("first_name")}
               onBlur={handleBlur("first_name")}
               value={values.first_name}
@@ -129,7 +147,8 @@ export default function SettingsScreen() {
             />
             <Input
               label="Last Name"
-              style={styles.input}
+              style={[styles.input, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}
+              textStyle={{color: colorScheme === "light" ? "black" : "white"}}
               onChangeText={handleChange("last_name")}
               onBlur={handleBlur("last_name")}
               value={values.last_name}
@@ -142,7 +161,8 @@ export default function SettingsScreen() {
             />
             <Input
               label="Username"
-              style={styles.input}
+              style={[styles.input, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}
+              textStyle={{color: colorScheme === "light" ? "black" : "white"}}
               autoCapitalize="none"
               onChangeText={handleChange("username")}
               onBlur={handleBlur("username")}
@@ -165,7 +185,7 @@ export default function SettingsScreen() {
             )}
             <KittenButton
               style={styles.button}
-              onPress={handleSubmit}
+              onPress={() => handleSubmit}
               disabled={isSubmitting}
               status="danger"
             >
@@ -177,6 +197,15 @@ export default function SettingsScreen() {
       <View style={{ width: "70%", marginTop: 20 }}>
         <KittenButton onPress={handleLogout} disabled={loading} status="danger">
           {loading ? "Logging out..." : "Logout"}
+        </KittenButton>
+        <KittenButton 
+          style={styles.themeButton} 
+          onPress={toggleTheme} 
+          disabled={loading}
+          accessoryLeft={Appearance.getColorScheme() === "light" ? moonIcon : sunIcon}
+          status="danger"
+        >
+          Change Theme
         </KittenButton>
       </View>
     </View>
@@ -196,14 +225,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  header: {
-    fontSize: 30,
-    marginBottom: 5,
-  },
-  subheader: {
-    fontSize: 20,
-    marginBottom: 10,
-  },
   form: {
     width: "100%",
     alignItems: "center",
@@ -211,9 +232,13 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 10,
     width: "70%",
+    borderColor: "maroon"
   },
   button: {
     marginTop: 10,
     width: "70%",
   },
+  themeButton: {
+    marginTop: 50,
+  }
 });

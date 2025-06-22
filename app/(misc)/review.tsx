@@ -1,4 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 import { supabase } from "@/data/supabase";
 import { useWriteLocationInfo } from "@/data/useWriteLocationInfo";
 import { useWriteReviews } from "@/data/useWriteReviews";
@@ -54,195 +55,220 @@ export default function ReviewScreen() {
   const locationID = localParams.locationID.toString();
 
   return (
-    <Formik
-      initialValues={{
-        OpeningTime: new Date(new Date().setHours(0, 0, 0, 0)),
-        ClosingTime: new Date(new Date().setHours(0, 0, 0, 0)),
-        PaymentType: "Hourly",
-        PriceHourly: 0,
-        ReviewText: "",
-      }}
-      validationSchema={reviewSchema}
-      onSubmit={(values, { resetForm }) => {
-        console.log("call");
-        writeLocationInfo.mutate({
-          locationID: locationID,
-          openTime: values.OpeningTime.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
-          }),
-          closingTime: values.ClosingTime.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false,
-          }),
-          paymentType: paymentOptions[selectedIndex.row],
-          priceHourly: values.PriceHourly,
-        });
+    <View>
+      <ThemedView style={styles.header}>
+        <Button
+          appearance="filled"
+          onPress={() => router.back()}
+          style={{ borderColor: "maroon", backgroundColor: "maroon" }}
+        >
+          Back
+        </Button>
+        <ThemedText
+          type="subtitle"
+          style={{ verticalAlign: "middle", padding: 10 }}
+        >
+          Write Review
+        </ThemedText>
+      </ThemedView>
 
-        // this is messy but it works usestate was not working for some reason i think cuz of async api call
-        getUserId().then((data) => {
-          if (data === null) {
-            writeReviews.mutate({
-              userID: "0",
-              reviewScore: 5,
-              reviewText: values.ReviewText,
-              locationID: locationID,
-            });
-          } else {
-            writeReviews.mutate({
-              userID: data,
-              reviewScore: 5,
-              reviewText: values.ReviewText,
-              locationID: locationID,
-            });
-          }
-        });
+      <Formik
+        initialValues={{
+          OpeningTime: new Date(new Date().setHours(0, 0, 0, 0)),
+          ClosingTime: new Date(new Date().setHours(0, 0, 0, 0)),
+          PaymentType: "Hourly",
+          PriceHourly: 0,
+          ReviewText: "",
+        }}
+        validationSchema={reviewSchema}
+        onSubmit={(values, { resetForm }) => {
+          console.log("call");
+          writeLocationInfo.mutate({
+            locationID: locationID,
+            openTime: values.OpeningTime.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false,
+            }),
+            closingTime: values.ClosingTime.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false,
+            }),
+            paymentType: paymentOptions[selectedIndex.row],
+            priceHourly: values.PriceHourly,
+          });
 
-        resetForm();
-        router.back();
-      }}
-    >
-      {({
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        values,
-        errors,
-        touched,
-        setFieldValue,
-      }) => (
-        <View style={styles.pageInner}>
-          <View style={styles.components}>
-            {/* // OPENING */}
-            <View style={styles.timeContainer}>
+          // this is messy but it works usestate was not working for some reason i think cuz of async api call
+          getUserId().then((data) => {
+            if (data === null) {
+              writeReviews.mutate({
+                userID: "0",
+                reviewScore: 5,
+                reviewText: values.ReviewText,
+                locationID: locationID,
+              });
+            } else {
+              writeReviews.mutate({
+                userID: data,
+                reviewScore: 5,
+                reviewText: values.ReviewText,
+                locationID: locationID,
+              });
+            }
+          });
+
+          resetForm();
+          router.back();
+        }}
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+          setFieldValue,
+        }) => (
+          <View style={styles.pageInner}>
+            <View style={styles.components}>
+              {/* // OPENING */}
+              <View style={styles.timeContainer}>
+                <Button
+                  style={styles.button}
+                  appearance="filled"
+                  onPress={() => setShowOpeningTimePicker(true)}
+                >
+                  Opening Time
+                </Button>
+                <ThemedText style={styles.time}>
+                  {" "}
+                  {values.OpeningTime.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}{" "}
+                </ThemedText>
+                <DateTimePickerModal
+                  isVisible={showOpeningTimePicker}
+                  mode="time"
+                  onConfirm={(time) => {
+                    setFieldValue("OpeningTime", time);
+                    setShowOpeningTimePicker(false);
+                  }}
+                  onCancel={() => setShowOpeningTimePicker(false)}
+                />
+              </View>
+
+              {/* // CLOSING */}
+              <View style={styles.timeContainer}>
+                <Button
+                  style={styles.button}
+                  appearance="filled"
+                  onPress={() => setShowClosingTimePicker(true)}
+                >
+                  Closing Time
+                </Button>
+                <ThemedText style={styles.time}>
+                  {" "}
+                  {values.ClosingTime.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}{" "}
+                </ThemedText>
+                <DateTimePickerModal
+                  isVisible={showClosingTimePicker}
+                  mode="time"
+                  onConfirm={(time) => {
+                    setFieldValue("ClosingTime", time);
+                    setShowClosingTimePicker(false);
+                  }}
+                  onCancel={() => setShowClosingTimePicker(false)}
+                />
+              </View>
+            </View>
+            {/* // PAYMENT TYPE */}
+            <View style={styles.components}>
+              <ThemedText>Payment Type</ThemedText>
+              <Select
+                value={displayValue}
+                selectedIndex={selectedIndex}
+                onSelect={(index) => {
+                  setSelectedIndex(index);
+                }}
+              >
+                <SelectItem title="Hourly" />
+                <SelectItem title="Daily" />
+                <SelectItem title="Per Minute" />
+              </Select>
+              {touched.PaymentType && errors.PaymentType && (
+                <ThemedText style={styles.errorMsg}>
+                  {errors.PaymentType}
+                </ThemedText>
+              )}
+              {/* // RATE */}
+              <ThemedText>Payment Rate (USD)</ThemedText>
+              <Input
+                value={undefined}
+                onChangeText={handleChange("PriceHourly")}
+                onBlur={handleBlur("PriceHourly")}
+                placeholder={values.PriceHourly.toString()}
+                inputMode="numeric"
+              />
+              {touched.PriceHourly && errors.PriceHourly && (
+                <ThemedText style={styles.errorMsg}>
+                  {errors.PriceHourly}
+                </ThemedText>
+              )}
+            </View>
+            {/* // REVIEW */}
+            <View style={styles.components}>
+              <ThemedText>Review</ThemedText>
+              <Input
+                textStyle={styles.reviewBox}
+                multiline={true}
+                value={values.ReviewText}
+                onChangeText={handleChange("ReviewText")}
+                onBlur={handleBlur("ReviewText")}
+                placeholder="Review"
+              />
+              {touched.ReviewText && errors.ReviewText && (
+                <ThemedText style={styles.errorMsg}>
+                  {errors.ReviewText}
+                </ThemedText>
+              )}
+            </View>
+            <View style={styles.components}>
               <Button
                 style={styles.button}
                 appearance="filled"
-                onPress={() => setShowOpeningTimePicker(true)}
+                onPress={() => handleSubmit()}
               >
-                Opening Time
+                Submit Review
               </Button>
-              <ThemedText style={styles.time}>
-                {" "}
-                {values.OpeningTime.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}{" "}
-              </ThemedText>
-              <DateTimePickerModal
-                isVisible={showOpeningTimePicker}
-                mode="time"
-                onConfirm={(time) => {
-                  setFieldValue("OpeningTime", time);
-                  setShowOpeningTimePicker(false);
-                }}
-                onCancel={() => setShowOpeningTimePicker(false)}
-              />
-            </View>
-
-            {/* // CLOSING */}
-            <View style={styles.timeContainer}>
-              <Button
-                style={styles.button}
-                appearance="filled"
-                onPress={() => setShowClosingTimePicker(true)}
-              >
-                Closing Time
-              </Button>
-              <ThemedText style={styles.time}>
-                {" "}
-                {values.ClosingTime.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}{" "}
-              </ThemedText>
-              <DateTimePickerModal
-                isVisible={showClosingTimePicker}
-                mode="time"
-                onConfirm={(time) => {
-                  setFieldValue("ClosingTime", time);
-                  setShowClosingTimePicker(false);
-                }}
-                onCancel={() => setShowClosingTimePicker(false)}
-              />
             </View>
           </View>
-          {/* // PAYMENT TYPE */}
-          <View style={styles.components}>
-            <ThemedText>Payment Type</ThemedText>
-            <Select
-              value={displayValue}
-              selectedIndex={selectedIndex}
-              onSelect={(index) => {
-                setSelectedIndex(index);
-              }}
-            >
-              <SelectItem title="Hourly" />
-              <SelectItem title="Daily" />
-              <SelectItem title="Per Minute" />
-            </Select>
-            {touched.PaymentType && errors.PaymentType && (
-              <ThemedText style={styles.errorMsg}>
-                {errors.PaymentType}
-              </ThemedText>
-            )}
-            {/* // RATE */}
-            <ThemedText>Payment Rate (USD)</ThemedText>
-            <Input
-              value={undefined}
-              onChangeText={handleChange("PriceHourly")}
-              onBlur={handleBlur("PriceHourly")}
-              placeholder={values.PriceHourly.toString()}
-              inputMode="numeric"
-            />
-            {touched.PriceHourly && errors.PriceHourly && (
-              <ThemedText style={styles.errorMsg}>
-                {errors.PriceHourly}
-              </ThemedText>
-            )}
-          </View>
-          {/* // REVIEW */}
-          <View style={styles.components}>
-            <ThemedText>Review</ThemedText>
-            <Input
-              textStyle={styles.reviewBox}
-              multiline={true}
-              value={values.ReviewText}
-              onChangeText={handleChange("ReviewText")}
-              onBlur={handleBlur("ReviewText")}
-              placeholder="Review"
-            />
-            {touched.ReviewText && errors.ReviewText && (
-              <ThemedText style={styles.errorMsg}>
-                {errors.ReviewText}
-              </ThemedText>
-            )}
-          </View>
-          <View style={styles.components}>
-            <Button
-              style={styles.button}
-              appearance="filled"
-              onPress={() => handleSubmit()}
-            >
-              Submit Review
-            </Button>
-          </View>
-        </View>
-      )}
-    </Formik>
+        )}
+      </Formik>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    padding: "1%",
+    marginTop: "10%",
+    flexDirection: "row",
+    verticalAlign: "middle",
+    height: "10%",
+  },
   pageInner: {
     padding: 30,
-    paddingTop: "10%",
+    paddingTop: "5%",
     paddingBottom: "10%",
   },
   errorMsg: {

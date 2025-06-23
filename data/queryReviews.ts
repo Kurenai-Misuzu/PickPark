@@ -17,13 +17,13 @@ export const QueryReviews = (locationID: number) => {
     queryFn: () => supabaseReviewQuery(locationID),
   });
 
-  if (isLoading) {
-    return "Loading...";
-  }
+  // if (isLoading) {
+  //   return "Loading...";
+  // }
 
-  if (data?.length === 0) {
-    return "No Reviews!";
-  }
+  // if (data?.length === 0) {
+  //   return "No Reviews!";
+  // }
 
   return data;
 };

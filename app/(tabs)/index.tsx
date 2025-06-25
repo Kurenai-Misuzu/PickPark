@@ -380,7 +380,7 @@ export default function HomeScreen() {
                 <ParkingCard name={item.name} address={item.address} id={item.id} location={item.location} />
               </Pressable>
             )}
-            ListEmptyComponent={<Text>No Parking Found</Text>}
+            ListEmptyComponent={<Text style={{color: colorScheme === "light" ? "black" : "white"}}>No Parking Found</Text>}
             contentContainerStyle={{ paddingBottom: 80 }}
             />) :
             (<View>

@@ -4,7 +4,9 @@ import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { Button as KittenButton } from '@ui-kitten/components'
 import ReviewComponent from "./ReviewComponent";
+
 interface LocationProps {
   name: string;
   address: string;
@@ -14,9 +16,9 @@ interface LocationProps {
 const LocationInfoCard: React.FC<LocationProps> = ({ name, address, id }) => {
   const colorScheme = useColorScheme();
   const { data, isLoading, error } = useQueryLocationInfo(id.toString());
-  if (isLoading) return <Text>Loading...</Text>;
+  if (isLoading) return <Text style={{color: colorScheme === "light" ? "black" : "white"}}>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
-  if (!data || data.length === 0) return <Text>No data found</Text>;
+  if (!data || data.length === 0) return <Text style={{color: colorScheme === "light" ? "black" : "white"}}>No data found</Text>;
 
   const locationData = data[0];
 
@@ -68,16 +70,17 @@ const LocationInfoCard: React.FC<LocationProps> = ({ name, address, id }) => {
         </Text>
         <ReviewComponent id={id} />
         <View style={styles.reviewButton}>
-          <Button
-            title={"Add Review"}
+          <KittenButton
+            style={styles.revButton}
             onPress={() =>
               router.push({
                 pathname: "/(misc)/review",
                 params: { locationID: id },
               })
             }
-            color="maroon"
-          />
+          >
+            Add Review
+          </KittenButton>
         </View>
       </BottomSheetScrollView>
     </BottomSheetView>
@@ -104,7 +107,14 @@ const styles = StyleSheet.create({
   },
   reviewButton: {
     width: "70%",
-    marginLeft: 60,
+    marginLeft: 50,
+  },
+  revButton: {
+    width: 275,
+    backgroundColor: "maroon",
+    borderColor: "maroon",
+    borderRadius: 10,
+    marginTop: 20,
   },
 });
 

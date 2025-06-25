@@ -55,6 +55,10 @@ export default function RootLayout() {
                     name="(misc)/review"
                     options={{ headerShown: false, title: "Reviews" }}
                   />
+                  <Stack.Screen
+                    name="(misc)/all-reviews"
+                    options={{ headerShown: false }}
+                  />
                   <Stack.Screen name="+not-found" />
                 </Stack>
                 <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} />

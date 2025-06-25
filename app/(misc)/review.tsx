@@ -14,6 +14,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as Yup from "yup";
 
@@ -40,12 +41,11 @@ const reviewSchema = Yup.object().shape({
 });
 
 export default function ReviewScreen() {
+  const colorScheme = useColorScheme();
   const [showOpeningTimePicker, setShowOpeningTimePicker] = useState(false);
   const [showClosingTimePicker, setShowClosingTimePicker] = useState(false);
 
-  const [selectedIndex, setSelectedIndex] = useState<IndexPath | IndexPath[]>(
-    new IndexPath(0),
-  );
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>(new IndexPath(0));
 
   const paymentOptions = ["Hourly", "Daily", "Per Minute"];
   const displayValue = paymentOptions[selectedIndex.row];
@@ -55,8 +55,8 @@ export default function ReviewScreen() {
   const locationID = localParams.locationID.toString();
 
   return (
-    <View>
-      <ThemedView style={styles.header}>
+    <View style={{flex: 1, backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}}>
+      <ThemedView style={[styles.header, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}>
         <Button
           appearance="filled"
           onPress={() => router.back()}
@@ -65,8 +65,8 @@ export default function ReviewScreen() {
           Back
         </Button>
         <ThemedText
-          type="subtitle"
-          style={{ verticalAlign: "middle", padding: 10 }}
+          type="title"
+          style={{ verticalAlign: "middle", paddingLeft: 30, paddingTop: 15 }}
         >
           Write Review
         </ThemedText>
@@ -198,7 +198,9 @@ export default function ReviewScreen() {
                 value={displayValue}
                 selectedIndex={selectedIndex}
                 onSelect={(index) => {
-                  setSelectedIndex(index);
+                  if (!Array.isArray(index)) {
+                    setSelectedIndex(index);
+                  }
                 }}
               >
                 <SelectItem title="Hourly" />
@@ -234,7 +236,7 @@ export default function ReviewScreen() {
                 value={values.ReviewText}
                 onChangeText={handleChange("ReviewText")}
                 onBlur={handleBlur("ReviewText")}
-                placeholder="Review"
+                placeholder="Message"
               />
               {touched.ReviewText && errors.ReviewText && (
                 <ThemedText style={styles.errorMsg}>
@@ -261,10 +263,12 @@ export default function ReviewScreen() {
 const styles = StyleSheet.create({
   header: {
     padding: "1%",
-    marginTop: "10%",
+    marginTop: "15%",
     flexDirection: "row",
     verticalAlign: "middle",
-    height: "10%",
+    height: "7.5%",
+    borderBottomColor: "maroon",
+    borderBottomWidth: 2,
   },
   pageInner: {
     padding: 30,

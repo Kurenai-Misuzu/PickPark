@@ -2,6 +2,7 @@ import { Text, Pressable, StyleSheet, View, FlatList } from "react-native";
 import { router } from "expo-router";
 import { useFavorites } from "@/contexts/FaveContext";
 import ParkingCard from "@/components/ParkingCard";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 type ParkingPlace = {
     name: string;
@@ -15,6 +16,7 @@ type ParkingPlace = {
 
 export default function FavoritesScreen() {
   const { favorites } = useFavorites();
+  const colorScheme = useColorScheme();
 
   const locationClick = (location: ParkingPlace["location"], id: number) => {
     router.push({
@@ -28,7 +30,7 @@ export default function FavoritesScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}>
       <FlatList 
         data={favorites}
         keyExtractor={(item) => item.id.toString()}
@@ -37,7 +39,7 @@ export default function FavoritesScreen() {
             <ParkingCard name={item.name} address={item.address} id={item.id} location={item.location} />
           </Pressable>
         )}
-        ListEmptyComponent={<Text>No Favorites Found</Text>}
+        ListEmptyComponent={<Text style={{color: colorScheme === "light" ? "black" : "white"}}>No Favorites Found</Text>}
       />
     </View>
   )

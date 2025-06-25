@@ -12,6 +12,10 @@
 
 PickPark leverages React Native, Google Maps API, and Supabase to provide users with a seamless way to discover and review parking locations. With an interactive map powered by Google Maps, users can effortlessly search for available parking spots. A dynamic list synchronizes with map markers, offering an intuitive browsing experience. Additionally, users can leave reviews for parking locations and save their favorite spots for easy access later.
 
+## Powerpoint
+
+- [PickPark PowerPoint](https://bellevuec-my.sharepoint.com/:p:/r/personal/jesse_wattenhofer_bellevuecollege_edu/_layouts/15/doc2.aspx?sourcedoc=%7B61BB6427-7AF7-4355-8178-8CA6F17CBD67%7D&file=DEV272_final_presentation.pptx&action=edit&mobileredirect=true&DefaultItemOpen=1&wdOrigin=MARKETING.POWERPOINT.SIGNIN%2CAPPHOME-WEB.JUMPBACKIN&wdPreviousSession=1f933337-0756-4fa0-ac06-78b1cec48fdb&wdPreviousSessionSrc=AppHomeWeb&ct=1750824258651)
+
 ## Setup Instructions
 
 ### Prerequisites
@@ -25,7 +29,7 @@ PickPark leverages React Native, Google Maps API, and Supabase to provide users 
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/your-username/PickPark.git
+   git clone https://github.com/Kurenai-Misuzu/PickPark
    cd PickPark
    ```
 

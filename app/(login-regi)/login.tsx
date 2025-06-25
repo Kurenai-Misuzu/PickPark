@@ -1,9 +1,11 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { router } from "expo-router";
 import { Formik, FormikHelpers } from "formik";
-import React from "react";
-import { Button, Image, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Input, Icon, IconElement, IconProps, Button } from "@ui-kitten/components";
 import * as Yup from "yup";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
@@ -12,6 +14,14 @@ const LoginSchema = Yup.object().shape({
 
 export default function LoginScreen() {
   const { login } = useAuth();
+  const [hidePassword, setHidePassword] = useState(true);
+  const colorScheme = useColorScheme();
+
+  const eyeIcon = (props: IconProps): IconElement => (
+    <Pressable onPress={() => setHidePassword(!hidePassword)}>
+      <Icon {...props} name={hidePassword ? "eye" : "eye-off"} fill="maroon" />
+    </Pressable>
+  );
 
   const handleLogin = async (
     values: { email: string; password: string },
@@ -23,13 +33,12 @@ export default function LoginScreen() {
     const loginError = await login(values.email, values.password);
     setSubmitting(false);
     if (loginError) setErrors({ email: loginError });
-    else router.push("/(tabs)");
+    // else router.push("/(tabs)");
   };
 
-  const loginUser = () => {
-    router.push({
-      pathname: "/(tabs)",
-    });
+  // DELETE THIS AND BUTTON BEFORE PRESENTATION!
+  const loginAdmin = async () => {
+    const loginError = await login("admin@admin.com", "password");
   };
 
   const toSignUp = () => {
@@ -39,13 +48,13 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}>
       <Image
         style={styles.pParkImage}
         source={require("@/assets/images/ParkingPin.png")}
       />
-      <Text style={styles.titleText}>Welcome to PickPark</Text>
-      <Text style={styles.descText}>Find the best parking near you</Text>
+      <Text style={[styles.titleText, {color: colorScheme === "light" ? "black" : "white"}]}>Welcome to PickPark</Text>
+      <Text style={[styles.descText, {color: colorScheme === "light" ? "black" : "gray"}]}>Find the best parking near you</Text>
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={LoginSchema}
@@ -61,8 +70,9 @@ export default function LoginScreen() {
           isSubmitting,
         }) => (
           <>
-            <TextInput
-              style={styles.infoBox}
+            <Input
+              style={[styles.infoBox, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}
+              textStyle={{color: colorScheme === "light" ? "black" : "white"}}
               placeholder="Email"
               autoCapitalize="none"
               keyboardType="email-address"
@@ -73,40 +83,32 @@ export default function LoginScreen() {
             {touched.email && errors.email && (
               <Text style={styles.error}>{errors.email}</Text>
             )}
-            <TextInput
-              style={styles.infoBox}
+            <Input
+              style={[styles.infoBox, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}
+              textStyle={{color: colorScheme === "light" ? "black" : "white"}}
               placeholder="Password"
-              secureTextEntry
+              secureTextEntry={hidePassword}
               onChangeText={handleChange("password")}
               onBlur={handleBlur("password")}
               value={values.password}
+              accessoryRight={eyeIcon}
             />
             {touched.password && errors.password && (
               <Text style={styles.error}>{errors.password}</Text>
             )}
-            <View style={styles.loginButton}>
+            <View>
               <Button
-                title={isSubmitting ? "Logging in..." : "Log In"}
                 onPress={handleSubmit as any}
-                color="#800000"
+                style={styles.loginButton}
                 disabled={isSubmitting}
-              />
+              >
+                {isSubmitting ? "Logging in..." : "Log In"}
+              </Button>
             </View>
           </>
         )}
       </Formik>
-      {/* TEMPORARY login button for easy access to app without authentication */}
-      <View style={styles.loginButton}>
-        <Button
-          title="Log In (Logs in without auth)"
-          onPress={() => {
-            loginUser();
-          }}
-          color="#800000"
-        />
-      </View>
-      <Text style={{ marginTop: 20, color: "maroon" }}>Forgot Password?</Text>
-      <Text style={{ marginTop: 20 }}>
+      <Text style={{ marginTop: 20, color: colorScheme === "light" ? "black" : "white" }}>
         Don&apos;t have an account? {/* Don't have an account?{" "} */}
         <Text
           style={{ color: "maroon" }}
@@ -124,11 +126,12 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+    flex: 1,
   },
   pParkImage: {
     marginTop: 50,
-    width: "70%",
-    height: "40%",
+    width: 275,
+    height: 300,
   },
   titleText: {
     fontSize: 35,
@@ -137,18 +140,21 @@ const styles = StyleSheet.create({
   descText: {
     fontSize: 20,
     color: "gray",
-    marginBottom: 50,
+    marginBottom: 30,
   },
   loginButton: {
-    width: "70%",
+    width: 275,
+    backgroundColor: "maroon",
+    borderColor: "maroon",
+    borderRadius: 10,
+    marginTop: 20,
   },
   infoBox: {
     borderColor: "maroon",
     borderWidth: 1,
     borderRadius: 3,
-    width: "70%",
-    marginBottom: 12,
-    padding: 13,
+    width: 275,
+    marginBottom: 20,
   },
-  error: { color: "red", marginBottom: 8 },
+  error: { color: "red", marginBottom: 5 },
 });

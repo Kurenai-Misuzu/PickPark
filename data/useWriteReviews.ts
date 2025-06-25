@@ -9,7 +9,7 @@ async function supabaseInsertReview(
 ) {
   const date = new Date();
 
-  const { data: insertedData, error } = await supabase.from("Reviews").insert([
+  const { data: insertedData, error } = await supabase.from("Reviews").upsert([
     {
       user_id: userID,
       review_score: reviewScore,

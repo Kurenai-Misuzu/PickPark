@@ -3,12 +3,14 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface ReviewProps {
   id: string;
 }
 
 const ReviewComponent: React.FC<ReviewProps> = ({ id }) => {
+  const colorScheme = useColorScheme();
   const { data: reviews } = useQueryReviews(id);
   //console.log(reviews);
 
@@ -23,13 +25,13 @@ const ReviewComponent: React.FC<ReviewProps> = ({ id }) => {
         })
       }
     >
-      <ThemedView style={styles.Reviews}>
+      <ThemedView style={[styles.Reviews, {backgroundColor: colorScheme === "light" ? "#cfcfcf" : "#333333"}]}>
         <ThemedText type="title" style={{ marginBottom: 20 }}>
           Reviews
         </ThemedText>
         {reviews?.length ? (
           reviews?.slice(0, 3).map((item, index) => (
-            <ThemedView key={`${item}-${index}`}>
+            <ThemedView key={`${item}-${index}`} style={{backgroundColor: colorScheme === "light" ? "#cfcfcf" : "#333333"}}>
               <ThemedText type="subtitle">
                 {item.User.first_name + " "} {item.User.last_name}
               </ThemedText>
@@ -50,6 +52,11 @@ const styles = StyleSheet.create({
   Reviews: {
     padding: 10,
     margin: 10,
+    borderRadius: 10,
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });
 

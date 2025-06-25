@@ -5,6 +5,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Button, Spinner } from "@ui-kitten/components";
 import { router, useLocalSearchParams } from "expo-router";
 import { FlatList, StyleSheet, View } from "react-native";
+import moment from 'moment';
 
 export default function ReviewsScreen() {
   const colorScheme = useColorScheme();
@@ -45,9 +46,12 @@ export default function ReviewsScreen() {
         data={reviews}
         keyExtractor={(item) => item.created_at}
         renderItem={({ item }) => (
-          <ThemedView>
+          <ThemedView style={[styles.reviewBox, {backgroundColor: colorScheme === "light" ? "#cfcfcf" : "#333333"}]}>
             <ThemedText type="subtitle">
               {item.User.first_name + " "} {item.User.last_name}
+            </ThemedText>
+            <ThemedText>
+              {"Date: " + moment(item.created_at).format("MM-DD-YYYY ") + moment(item.created_at).format("hh:mm A")}
             </ThemedText>
             <ThemedText style={{ marginLeft: 10 }}>
               {"• " + item.review_text}
@@ -76,4 +80,12 @@ const styles = StyleSheet.create({
     borderBottomColor: "maroon",
     borderBottomWidth: 2,
   },
+  reviewBox: {
+    width: 350,
+    padding: 15,
+    marginBottom: 30,
+    borderBottomWidth: 2,
+    borderBottomColor: "maroon",
+    borderRadius: 5,
+  }
 });

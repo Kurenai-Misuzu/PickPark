@@ -1,6 +1,6 @@
 # PickPark
 
-## A cross platform parking application created with React Native and Expo.
+## A cross-platform parking application created with React Native and Expo.
 
 ### Dylan Verallo, Jesse Wattenhofer, Nicholas Schwamborn, James Abuan
 
@@ -71,3 +71,72 @@ PickPark leverages React Native, Google Maps API, and Supabase to provide users 
 If you do not have the required API keys, request them from the project maintainer or follow the instructions in `.env.example` to obtain your own.
 
 ---
+
+## Testing Instructions
+
+### Prerequisites
+
+- .env with required API keys is included in the project.
+
+### Steps
+
+1. **Create an account:**
+
+   ```sh
+   Navigate through the login and registration page to create an account.
+   Must use a valid email address.
+   ```
+
+2. **Test map fetching:**
+
+   ```sh
+   Use the map's region scrolling and search bar to find local and broad locations for parking.
+   Clicking on a marker or card will show the location's information.
+   ```
+
+3. **Test favorite location feature:**
+
+   ```sh
+   Click on the heart next to any location card on the bottom sheet, and it should update the icon and
+   show on the favorites page.
+   Clicking on a card on the favorites page will take you to the map page and focus on the marker.
+   ```
+
+4. **App settings:**
+
+   ```sh
+   Customize your account or change the app's theme through the settings page.
+   ```
+
+5. **Test adding a review:**
+
+   ```sh
+   Click on a location card or marker and pull the tab up. Click on `add review` to update the location's
+   reviews based on pricing, pricing type, and operating hours.
+   ```
+
+6. **View all reviews:**
+
+   ```sh
+   On the location's info card, click on the reviews box to show all the reviews for the location.
+   ```
+
+   ---
+
+### List of core features
+
+- Embedded map to fetch nearby parking locations based on search or scroll.
+- Local storage of favorite cards for offline info.
+- Up-to-date information for locations based on user reviews.
+- Validated user authentication
+
+### Role-based team contributions
+
+- Jesse: Developed login and registration page with Supabase integration and error handling, created an authentication context to ensure only authenticated users can access the app, and created the retrospectives each week.
+- Nick: Built the main search page with a location favorite feature, customized the app's UI with complete app dark mode.
+- Dylan: Designed the Supabase database tables and hook creation for easy data access, and developed the review page and functionality.
+- James: Implemented component testing with Jest and assisted with backend integrity and configuration.
+
+### Known bugs or limitations
+
+- Clicking on a favorite card when the map doesn't already have the marker rendered in will focus on the location, but not immediately render the marker or show its information. On a re-render, it will show.

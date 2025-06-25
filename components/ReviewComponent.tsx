@@ -1,12 +1,11 @@
 import { useQueryReviews } from "@/data/queryReviews";
-import { FlatList, Pressable, StyleSheet } from "react-native";
+import { router } from "expo-router";
+import { Pressable, StyleSheet } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { router } from "expo-router";
-import { useState } from "react";
 
 interface ReviewProps {
-  id: number;
+  id: string;
 }
 
 const ReviewComponent: React.FC<ReviewProps> = ({ id }) => {
@@ -16,11 +15,11 @@ const ReviewComponent: React.FC<ReviewProps> = ({ id }) => {
   // red squiggly on first_name and last_name work here
 
   return (
-    <Pressable 
+    <Pressable
       onPress={() =>
         router.push({
           pathname: "/(misc)/all-reviews",
-          params: { id: id.toString() },
+          params: { location_id: id },
         })
       }
     >
@@ -31,12 +30,12 @@ const ReviewComponent: React.FC<ReviewProps> = ({ id }) => {
         {reviews?.length ? (
           reviews?.slice(0, 3).map((item, index) => (
             <ThemedView key={`${item}-${index}`}>
-                <ThemedText type="subtitle">
-                  {item.User.first_name + " "} {item.User.last_name}
-                </ThemedText>
-                <ThemedText style={{ marginLeft: 10 }}>
-                  {"• " + item.review_text}
-                </ThemedText>
+              <ThemedText type="subtitle">
+                {item.User.first_name + " "} {item.User.last_name}
+              </ThemedText>
+              <ThemedText style={{ marginLeft: 10 }}>
+                {"• " + item.review_text}
+              </ThemedText>
             </ThemedView>
           ))
         ) : (

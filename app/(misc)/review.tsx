@@ -3,6 +3,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { supabase } from "@/data/supabase";
 import { useWriteLocationInfo } from "@/data/useWriteLocationInfo";
 import { useWriteReviews } from "@/data/useWriteReviews";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   Button,
   IndexPath,
@@ -14,7 +15,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as Yup from "yup";
 
@@ -45,7 +45,9 @@ export default function ReviewScreen() {
   const [showOpeningTimePicker, setShowOpeningTimePicker] = useState(false);
   const [showClosingTimePicker, setShowClosingTimePicker] = useState(false);
 
-  const [selectedIndex, setSelectedIndex] = useState<IndexPath>(new IndexPath(0));
+  const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
+    new IndexPath(0),
+  );
 
   const paymentOptions = ["Hourly", "Daily", "Per Minute"];
   const displayValue = paymentOptions[selectedIndex.row];
@@ -55,8 +57,18 @@ export default function ReviewScreen() {
   const locationID = localParams.locationID.toString();
 
   return (
-    <View style={{flex: 1, backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}}>
-      <ThemedView style={[styles.header, {backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e"}]}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e",
+      }}
+    >
+      <ThemedView
+        style={[
+          styles.header,
+          { backgroundColor: colorScheme === "light" ? "white" : "#1a1b1e" },
+        ]}
+      >
         <Button
           appearance="filled"
           onPress={() => router.back()}

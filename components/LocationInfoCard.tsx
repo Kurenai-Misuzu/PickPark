@@ -1,10 +1,10 @@
 import { useQueryLocationInfo } from "@/data/queryLocationInfo";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
+import { Button as KittenButton } from "@ui-kitten/components";
 import { router } from "expo-router";
 import React from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { Button as KittenButton } from '@ui-kitten/components'
+import { StyleSheet, Text, View } from "react-native";
 import ReviewComponent from "./ReviewComponent";
 
 interface LocationProps {
@@ -16,9 +16,19 @@ interface LocationProps {
 const LocationInfoCard: React.FC<LocationProps> = ({ name, address, id }) => {
   const colorScheme = useColorScheme();
   const { data, isLoading, error } = useQueryLocationInfo(id.toString());
-  if (isLoading) return <Text style={{color: colorScheme === "light" ? "black" : "white"}}>Loading...</Text>;
+  if (isLoading)
+    return (
+      <Text style={{ color: colorScheme === "light" ? "black" : "white" }}>
+        Loading...
+      </Text>
+    );
   if (error) return <Text>Error: {error.message}</Text>;
-  if (!data || data.length === 0) return <Text style={{color: colorScheme === "light" ? "black" : "white"}}>No data found</Text>;
+  if (!data || data.length === 0)
+    return (
+      <Text style={{ color: colorScheme === "light" ? "black" : "white" }}>
+        No data found
+      </Text>
+    );
 
   const locationData = data[0];
 
@@ -68,7 +78,7 @@ const LocationInfoCard: React.FC<LocationProps> = ({ name, address, id }) => {
         >
           Pay: ${locationData.price_hourly}
         </Text>
-        <ReviewComponent id={id} />
+        <ReviewComponent id={id.toString()} />
         <View style={styles.reviewButton}>
           <KittenButton
             style={styles.revButton}
